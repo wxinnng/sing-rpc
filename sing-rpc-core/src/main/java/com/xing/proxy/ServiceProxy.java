@@ -5,7 +5,6 @@ import cn.hutool.http.HttpResponse;
 import com.xing.RpcApplication;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
-import com.xing.serializer.JDKSerializer;
 import com.xing.serializer.Serializer;
 import com.xing.serializer.SerializerFactory;
 

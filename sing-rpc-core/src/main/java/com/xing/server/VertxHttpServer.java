@@ -2,10 +2,12 @@ package com.xing.server;
 
 
 import io.vertx.core.Vertx;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Vertx HTTP 服务器
  */
+@Slf4j
 public class VertxHttpServer implements HttpServer {
 
     /**
@@ -26,9 +28,9 @@ public class VertxHttpServer implements HttpServer {
         // 启动 HTTP 服务器并监听指定端口
         server.listen(port, result -> {
             if (result.succeeded()) {
-                System.out.println("Server is now listening on port " + port);
+                log.info("Server is now listening on port " + port);
             } else {
-                System.err.println("Failed to start server: " + result.cause());
+                log.error("Failed to start server: " + result.cause());
             }
         });
     }

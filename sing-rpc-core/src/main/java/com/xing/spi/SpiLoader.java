@@ -86,6 +86,7 @@ public class SpiLoader {
             try {
                 instanceCache.put(implClassName, implClass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
+                log.error("spi instance load error", e);
                 String errorMsg = String.format("%s 类实例化失败", implClassName);
                 throw new RuntimeException(errorMsg, e);
             }
@@ -104,6 +105,8 @@ public class SpiLoader {
         System.out.println("加载类型为 " + loadClass.getName() + " 的 SPI");
         // 扫描路径，用户自定义的 SPI 优先级高于系统 SPI
         Map<String, Class<?>> keyClassMap = new HashMap<>();
+
+        //加载的顺序是 system -> custom,所以同名的序列化器，自定义会覆盖系统。
         for (String scanDir : SCAN_DIRS) {
             List<URL> resources = ResourceUtil.getResources(scanDir + loadClass.getName());
             // 读取每个资源文件
@@ -113,11 +116,12 @@ public class SpiLoader {
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
+                        //把自定的内容以'='分开，例如jdk=com.xing.serializer.JSONSerializer,分成 jdk 和 com.xing.serializer.JSONSerializer
                         String[] strArray = line.split("=");
                         if (strArray.length > 1) {
-                            String key = strArray[0];
-                            String className = strArray[1];
-                            keyClassMap.put(key, Class.forName(className));
+                            String key = strArray[0]; //key -- string : 类加载器名称
+                            String className = strArray[1];  //value : 类的全路径
+                            keyClassMap.put(key, Class.forName(className));  //加载class，放到hashMap
                         }
                     }
                 } catch (Exception e) {
@@ -126,6 +130,7 @@ public class SpiLoader {
                 }
             }
         }
+        //返回所以加载的 serialize.class (key)-（序列化器名（key） - 类（value））（value）的集合。
         loaderMap.put(loadClass.getName(), keyClassMap);
         return keyClassMap;
     }

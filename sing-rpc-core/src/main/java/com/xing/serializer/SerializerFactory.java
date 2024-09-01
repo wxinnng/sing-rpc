@@ -3,7 +3,7 @@ package com.xing.serializer;
 import com.xing.spi.SpiLoader;
 
 /**
- * 序列化工厂:序列化器，不用每次使用的时候就创建一个，单例+工厂
+ * 序列化工厂:序列化器，不用每次使用的时候就创建一个，单例  + 工厂
  */
 public class SerializerFactory {
 
