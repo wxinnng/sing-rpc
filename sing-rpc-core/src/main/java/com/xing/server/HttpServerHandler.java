@@ -1,11 +1,13 @@
 package com.xing.server;
 
 
+import com.xing.RpcApplication;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.registry.LocalRegistry;
 import com.xing.serializer.JDKSerializer;
 import com.xing.serializer.Serializer;
+import com.xing.serializer.SerializerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -21,8 +23,9 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {
-        // 指定序列化器
-        final Serializer serializer = new JDKSerializer();
+
+        // 指定序列化器(加载配置 & 默认配置)
+        final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 记录日志
         System.out.println("Test:Received request: " + request.method() + " " + request.uri());

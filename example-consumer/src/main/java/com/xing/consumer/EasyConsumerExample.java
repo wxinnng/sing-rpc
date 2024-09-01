@@ -14,7 +14,9 @@ import com.xing.utils.ConfigUtils;
 public class EasyConsumerExample {
 
     public static void main(String[] args) {
+
         RpcApplication.init();
+
         UserService userService = ServiceProxyFactory.getProxy(UserService.class);
 
         User user = new User();
