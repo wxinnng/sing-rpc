@@ -5,13 +5,13 @@ import com.xing.RpcApplication;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.registry.LocalRegistry;
-import com.xing.serializer.JDKSerializer;
 import com.xing.serializer.Serializer;
 import com.xing.serializer.SerializerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+
 
 import java.io.IOException;
 import java.lang.reflect.Method;

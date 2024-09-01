@@ -1,8 +1,11 @@
 
 package com.xing;
 
+import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
+import com.xing.registry.Registry;
+import com.xing.registry.RegistryFactory;
 import com.xing.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,14 +14,22 @@ public class RpcApplication {
 
     private static volatile RpcConfig rpcConfig;
 
+
     /**
-     * 通过自定义配置初始化
-     * @param rpcConfig
+     * 框架初始化，支持传入自定义配置
+     *
+     * @param newRpcConfig
      */
-    public static void init(RpcConfig rpcConfig){
-        RpcApplication.rpcConfig = rpcConfig;
-        log.info("rpc init,config = {}",rpcConfig);
+    public static void init(RpcConfig newRpcConfig) {
+        rpcConfig = newRpcConfig;
+        log.info("rpc init, config = {}", newRpcConfig.toString());
+        // 注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
+        log.info("registry init, config = {}", registryConfig);
     }
+
 
 
     public static void init(){

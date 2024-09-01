@@ -13,4 +13,6 @@ public interface RpcConstant {
      * rpc.version=2.0
      * rpc.serverPort=8081
      */
+
+    String DEFAULT_SERVICE_VERSION = "1.0.0";
 }
