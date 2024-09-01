@@ -13,7 +13,6 @@
         <module>example-consumer</module>
         <module>example-provider</module>
         <module>sing-rpc-easy</module>
-
         <module>sing-rpc-core</module>
     </modules>
 

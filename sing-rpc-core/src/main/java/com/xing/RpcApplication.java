@@ -1,9 +1,12 @@
+
 package com.xing;
 
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
 import com.xing.utils.ConfigUtils;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RpcApplication {
 
     private static volatile RpcConfig rpcConfig;
@@ -14,7 +17,7 @@ public class RpcApplication {
      */
     public static void init(RpcConfig rpcConfig){
         RpcApplication.rpcConfig = rpcConfig;
-//        log.info("rpc init,config = {}",rpcConfig);
+        log.info("rpc init,config = {}",rpcConfig);
     }
 
 

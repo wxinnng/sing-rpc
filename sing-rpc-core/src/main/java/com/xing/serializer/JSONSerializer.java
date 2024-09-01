@@ -5,27 +5,27 @@ package com.xing.serializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
+import lombok.extern.slf4j.Slf4j;
 
 
 import java.io.IOException;
 
 /**
  * Json 序列化器
- *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @learn <a href="https://codefather.cn">编程宝典</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
  */
+@Slf4j
 public class JSONSerializer implements Serializer {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public <T> byte[] serialize(T obj) throws IOException {
+        log.info("serialize by json");
         return OBJECT_MAPPER.writeValueAsBytes(obj);
     }
 
     @Override
     public <T> T deserialize(byte[] bytes, Class<T> classType) throws IOException {
+        log.info("deserialize by json");
         T obj = OBJECT_MAPPER.readValue(bytes, classType);
         if (obj instanceof RpcRequest) {
             return handleRequest((RpcRequest) obj, classType);
