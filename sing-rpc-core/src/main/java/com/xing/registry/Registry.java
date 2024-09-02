@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface Registry {
 
+
+
     /**
      * 初始化
      * @param registryConfig
@@ -37,5 +39,16 @@ public interface Registry {
      * 销毁
      */
     void destroy();
+
+    /**
+     * 心跳检测
+     */
+    void heartBeat();
+
+
+    /**
+     * 监听消费者
+     */
+    void watch(String serviceNodeKey);
 
 }
