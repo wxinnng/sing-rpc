@@ -38,7 +38,9 @@ public class EtcdRegistry implements Registry {
 
 
     //缓存服务信息
-    private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
+//    private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
+
+    private final RegistryServiceMultiCache registryServiceCache = new RegistryServiceMultiCache();
 
     /**
      * 根节点
@@ -91,7 +93,7 @@ public class EtcdRegistry implements Registry {
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
 
         //优先从缓存中获取服务
-        List<ServiceMetaInfo> serviceCache = registryServiceCache.readCache();
+        List<ServiceMetaInfo> serviceCache = registryServiceCache.readCache(serviceKey);
         if(serviceCache != null) {
             return serviceCache;
         }
@@ -121,7 +123,7 @@ public class EtcdRegistry implements Registry {
                     .collect(Collectors.toList());
 
             //将读取的内容写入缓存
-            registryServiceCache.writeCache(serviceMetaInfo);
+            registryServiceCache.writeCache(serviceKey , serviceMetaInfo);
             //返回缓存内容
             return serviceMetaInfo;
 
@@ -203,7 +205,7 @@ public class EtcdRegistry implements Registry {
                     switch (event.getEventType()){
                         case DELETE:
                             //如果对这个key是删除操作，就要清理一次缓存
-                            registryServiceCache.clearCache();
+                            registryServiceCache.clearCache(serviceNodeKey);
                             break;
                         case PUT:
                         default:
