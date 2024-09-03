@@ -1,6 +1,8 @@
 package com.xing.config;
 
 
+import com.xing.fault.retry.RetryStrategy;
+import com.xing.fault.retry.RetryStrategyKeys;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerKeys;
 import com.xing.loadbalancer.RoundRobinLoadBalancer;
@@ -45,4 +47,8 @@ public class RpcConfig {
      * 负载均衡 (DEFAULT:ROUND_ROBIN)
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+    /**
+     * 重试机制
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 }
