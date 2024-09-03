@@ -1,8 +1,6 @@
 package com.xing.proxy;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.xing.RpcApplication;
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
@@ -13,10 +11,12 @@ import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
 import com.xing.serializer.Serializer;
 import com.xing.serializer.SerializerFactory;
+import com.xing.server.tcp.VertxTcpClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.List;
+
 
 /**
  * 实现JDK的动态代理
@@ -24,12 +24,16 @@ import java.util.List;
 public class ServiceProxy implements InvocationHandler {
 
 
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-        String serviceName = method.getDeclaringClass().getName();
+
         //指定序列化器
         Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
+
+        //服务名称
+        String serviceName = method.getDeclaringClass().getName();
 
         //构造请求
         RpcRequest rpcRequest = RpcRequest.builder()
@@ -59,14 +63,21 @@ public class ServiceProxy implements InvocationHandler {
             ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfos.get(0);
 
 
-            //发送请求
-            try(HttpResponse response = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-                    .body(data)
-                    .execute()
-            ){
-                byte[] result = response.bodyBytes();
-                return serializer.deserialize(result, RpcResponse.class).getData();
-            }
+            //发送HTTP请求
+//            try(HttpResponse response = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
+//                    .body(data)
+//                    .execute()
+//            ){
+//                byte[] result = response.bodyBytes();
+//                return serializer.deserialize(result, RpcResponse.class).getData();
+//            }
+
+            //发送TCP请求
+            RpcResponse rpcResponse = VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo);
+
+            //返回结果
+            return rpcResponse.getData();
+
         }catch (Exception e){
             e.printStackTrace();
             System.out.println("ServiceProxy.invoke");

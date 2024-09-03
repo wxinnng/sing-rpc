@@ -9,8 +9,7 @@ import com.xing.registry.EtcdRegistry;
 import com.xing.registry.LocalRegistry;
 import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
-import com.xing.server.HttpServer;
-import com.xing.server.VertxHttpServer;
+import com.xing.server.tcp.VertxTcpServer;
 import com.xing.service.UserService;
 
 /**
@@ -42,7 +41,8 @@ public class ProviderExample {
         }
 
         // 启动 web 服务
-        HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+        VertxTcpServer tcpServer = new VertxTcpServer();
+        tcpServer.doStart(rpcConfig.getServerPort());
+
     }
 }

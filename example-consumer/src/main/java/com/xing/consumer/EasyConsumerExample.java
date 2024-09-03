@@ -20,7 +20,7 @@ public class EasyConsumerExample {
         User user = new User();
         user.setName("xing");
 
-        System.out.println(userService.getUser(user));
+        System.out.println(userService.getUser(user).getName());
 
         System.out.println(userService.getNumber());
     }

@@ -21,7 +21,7 @@ public class RpcConfig {
     /**
      * 端口号
      */
-    private Integer serverPort = 8080;
+    private Integer serverPort = 9000;
 
     /**
      * mock测试功能开关
