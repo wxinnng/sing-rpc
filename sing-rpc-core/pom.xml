@@ -94,11 +94,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.xing</groupId>
-            <artifactId>example-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <!-- https://github.com/rholder/guava-retrying -->
         <dependency>

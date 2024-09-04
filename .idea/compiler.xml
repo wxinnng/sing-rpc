@@ -8,8 +8,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="sing-rpc-easy" />
+        <module name="example-springboot-provider" />
+        <module name="example-springboot-consumer" />
         <module name="example-provider" />
         <module name="example-common" />
+        <module name="sing-rpc-spring-boot-starter" />
         <module name="example-consumer" />
         <module name="sing-rpc-core" />
       </profile>
