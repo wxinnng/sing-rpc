@@ -12,11 +12,13 @@
         <option value="$PROJECT_DIR$/sing-rpc-spring-boot-starter/pom.xml" />
         <option value="$PROJECT_DIR$/example-springboot-provider/pom.xml" />
         <option value="$PROJECT_DIR$/example-springboot-consumer/pom.xml" />
+        <option value="$PROJECT_DIR$/srpc-springboot-starter/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/example/pom.xml" />
+        <option value="$PROJECT_DIR$/sing-rpc-spring-boot-starter/pom.xml" />
       </set>
     </option>
   </component>

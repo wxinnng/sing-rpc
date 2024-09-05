@@ -1,0 +1,7 @@
+rpc:
+    registry: redis
+    serializer: kory
+    serverPort: 9001
+    version: 1.0.1
+    registryConfig:
+        registry: redis

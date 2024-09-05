@@ -1,5 +1,10 @@
 package com.xing.constant;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public interface RpcConstant {
 
     /**
@@ -15,4 +20,5 @@ public interface RpcConstant {
      */
 
     String DEFAULT_SERVICE_VERSION = "1.0.0";
+
 }

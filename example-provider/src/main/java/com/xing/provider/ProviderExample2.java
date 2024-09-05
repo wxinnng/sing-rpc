@@ -3,7 +3,7 @@ package com.xing.provider;
 import com.xing.bootstrap.ProviderBootstrap;
 import com.xing.model.ServiceRegisterInfo;
 import com.xing.service.UserService;
-import com.xing.test.UserServiceImpl;
+
 
 import java.util.ArrayList;
 import java.util.List;

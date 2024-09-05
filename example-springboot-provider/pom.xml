@@ -27,7 +27,7 @@
 
         <dependency>
             <groupId>com.xing</groupId>
-            <artifactId>sing-rpc-spring-boot-starter</artifactId>
+            <artifactId>srpc-springboot-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
