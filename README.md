@@ -4,12 +4,7 @@
 
 ### 1. 项目特点：
 
-​	***`sing-RPC`***,是一款基于**`JAVA`**的`RPC`框架，旨在解决多个远程服务之间调用的问题。作为一款`RPC`框架，它具有以下特点：
 
-* **高可用：**基于 `Etcd` 云原生中间件实现了高可用的分布式注册中心，同时采用服务的负载均衡、出错重试、容错机制等，保证了服务的高可用。
-* **高性能：**基于 `Vert.x TCP` 服务器 + 类 `Dubbo` 的紧凑型消息结构（字节数组）自实现了 `RPC `协议，提升网络传输性能。
-* **可扩展：**使用工厂模式 + 单例模式简化创建和获取序列化器对象的操作。并通过扫描资源路径 + 反射自实现了 `SPI `机制，用户可通过配置的方式，指定单独的序列化器、注册中心、容错机制等。
-* **易操作：**封装了服务提供者和消费者启动类；并开发了基于注解驱动的 Spring Boot Starter，一个注解就能快速注册 Bean 为服务、以及注入服务调用代理对象
 
 ### 2.版本迭代：
 
@@ -24,7 +19,6 @@
 
 ### 1.整体流程
 
-<img src="C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240904165740208.png" alt="image-20240904165740208" style="zoom:50%;" />
 
 ### 2.详细设计
 
@@ -68,7 +62,6 @@
 
 ​	本项目的自定义协议，参考了`Dubbo`的设计方案。
 
-![image-20240904163329533](C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240904163329533.png)
 
 * 魔数：安全校验
 * 版本号：保证请求和响应的一致即可
@@ -115,7 +108,6 @@ https://blog.csdn.net/weixin_47025166/article/details/125415538
 
 ### 1.`SpringBoot`应用
 
-![image-20240904173025343](C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240904173025343.png)
 
 #### 1.1 引入依赖
 
@@ -190,7 +182,6 @@ https://blog.csdn.net/weixin_47025166/article/details/125415538
 
 ### 2. 非`SpringBoot`应用
 
-![image-20240904173039623](C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240904173039623.png)
 
 #### 2.1引入依赖
 
