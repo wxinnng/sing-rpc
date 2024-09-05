@@ -239,7 +239,9 @@ public static void main(String[] args) {
 - [ ] 1.0版本中，只实现了`Etcd`一种注册中心
 - [ ] `RPC`请求没有做安全验证
 - [ ] 没有一种类似于`Nacos`的可视化面板
-- [ ] 1.0版本中只支持使用`properties`文件配置的方式
+- [x] 1.0版本中只支持使用`properties`文件配置的方式
+  - [x] 1.0.2版本已经支持yml的配置。
+  - [x] 注意优先级：properties > yml > 默认，推荐properties或yml使用一种即可。
 - [ ] 注册的服务不支持分区
 - [ ] 缺少拦截器机制
 - [ ] 容错机制单一，Fail-back，Fail-over等机制都没有实现，更复杂的还有：限流、熔断、超时控制等等

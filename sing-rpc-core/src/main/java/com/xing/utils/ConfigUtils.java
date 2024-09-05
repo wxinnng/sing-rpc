@@ -48,12 +48,15 @@ public class ConfigUtils {
         }
         configFileBuilder.append(".properties");
         Props props = new Props(configFileBuilder.toString());
-        T primaryBean = props.toBean(tClass, prefix);
-        T secondBean = loadConfigFromYaml(prefix, environment);
-        return primaryBean != null ? primaryBean : secondBean;
+        return props.toBean(tClass, prefix);
     }
 
-    public static <T> T loadConfigFromYaml(String prefix,String environment) {
+
+    public static void main(String[] args) {
+        System.out.println(loadConfig(RpcConfig.class, "rpc", ""));
+    }
+
+    public static <T> T loadConfigFromYaml(Class<T> tClass,String prefix,String environment) {
         Yaml yaml = new Yaml();
         StringBuilder configFileBuilder = new StringBuilder("application");
         if (StrUtil.isNotBlank(environment)) {
@@ -62,32 +65,16 @@ public class ConfigUtils {
         configFileBuilder.append(".yml");
         try (InputStream inputStream = ConfigUtils.class.getClassLoader().getResourceAsStream(configFileBuilder.toString())) {
             Map<String, Object> data = yaml.load(inputStream);
-            T rpc = (T) BeanUtil.toBean(data.get("rpc"), RpcConfig.class);
+            T rpc = (T) BeanUtil.toBean(data.get("rpc"),tClass);
+            System.out.println(rpc);
             return rpc;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException();
         }
-        return null;
     }
 
 
-    public static void main(String[] args) {
-//        Yaml yaml = new Yaml();
-//        StringBuilder configFileBuilder = new StringBuilder("application");
-//        configFileBuilder.append(".yml");
-//        try (InputStream inputStream = ConfigUtils.class.getClassLoader().getResourceAsStream(configFileBuilder.toString())) {
-//            // 使用load方法解析YAML文件为一个Map
-//            // 注意：由于YAML的灵活性，这里的值可能是任何类型，包括List、Map等
-//            Map<String, Object> data = yaml.load(inputStream);
-//            RpcConfig rpc = BeanUtil.toBean(data.get("rpc"), RpcConfig.class);
-//
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-        System.out.println(loadConfig(RpcConfig.class, "rpc", ""));
-    }
+
 
 
 }

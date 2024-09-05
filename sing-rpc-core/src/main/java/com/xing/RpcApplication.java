@@ -37,13 +37,18 @@ public class RpcApplication {
 
 
     public static void init(){
-        RpcConfig newRpcConfig;
+        RpcConfig newRpcConfig = null;
         try{
-            //加载配置文件到rpcConfig
+            //加载配置文件到rpcConfig ,properties文件
             newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
         }catch(Exception e){
-            //配置加载失败，使用默认配置
-            newRpcConfig = new RpcConfig();
+            try{
+                //yml文件
+                newRpcConfig = ConfigUtils.loadConfigFromYaml(RpcConfig.class,RpcConstant.DEFAULT_CONFIG_PREFIX,"");
+            } catch (Exception ex) {
+                //配置加载失败，使用默认配置
+                newRpcConfig = new RpcConfig();
+            }
         }
         init(newRpcConfig);
     }
