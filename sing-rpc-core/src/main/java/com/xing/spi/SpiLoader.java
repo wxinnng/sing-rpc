@@ -62,6 +62,15 @@ public class SpiLoader {
     }
 
     /**
+     * 获得class
+     * @param key
+     * @return
+     */
+    public static Map<String,Class<?>> getAllClazzByClassName(String key){
+        return loaderMap.get(key);
+    }
+
+    /**
      * 获取某个接口的实例
      *
      * @param tClass

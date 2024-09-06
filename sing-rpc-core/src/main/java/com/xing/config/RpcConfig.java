@@ -10,6 +10,11 @@ import com.xing.loadbalancer.RoundRobinLoadBalancer;
 import com.xing.serializer.SerializerKeys;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Data
 public class RpcConfig {
     /**
@@ -54,4 +59,8 @@ public class RpcConfig {
      * 容错机制
      */
     private String tolerantStrategy = TolerantStrategyKeys.FAIL_FAST;
+    /**
+     * 默认没有排除
+     */
+    private Set<String> filterExclusionSet = new HashSet<>();
 }

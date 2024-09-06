@@ -4,10 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import com.xing.RpcApplication;
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
+import com.xing.exception.RequestRejectException;
 import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyFactory;
 import com.xing.fault.tolerant.TolerantStrategy;
 import com.xing.fault.tolerant.TolerantStrategyFactory;
+import com.xing.filter.Filter;
+import com.xing.filter.FilterComponent;
+import com.xing.filter.FilterReject;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerFactory;
 import com.xing.model.RpcRequest;
@@ -25,6 +29,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 
 /**
@@ -51,6 +56,18 @@ public class ServiceProxy implements InvocationHandler {
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args).build();
+
+
+
+        //调用过滤器链
+        PriorityQueue<Filter> consumerFilter = FilterComponent.getConsumerFilter();
+        for(Filter filter:consumerFilter){
+            if(!filter.doFilter(rpcRequest,null)){
+                log.info("未能通过过滤器链 -- request");
+                return null;
+            }
+        }
+
         //序列化
         byte[] data = serializer.serialize(rpcRequest);
 
@@ -104,6 +121,17 @@ public class ServiceProxy implements InvocationHandler {
             //执行容错机制
             tolerantStrategy.doTolerant(null,e);
         }
+
+        //调用provider的过滤器链
+        PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
+        for(Filter filter:providerFilter){
+            if(!filter.doFilter(rpcRequest,rpcResponse)){
+                log.info("未能通过过滤器链--response");
+                return null;
+            }
+        }
+
+
         //返回结果
         return rpcResponse.getData();
     }

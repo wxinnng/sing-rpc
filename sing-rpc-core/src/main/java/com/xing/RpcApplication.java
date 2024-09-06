@@ -1,4 +1,3 @@
-
 package com.xing;
 
 import com.xing.config.RegistryConfig;

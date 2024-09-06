@@ -1,0 +1,3 @@
+consumerContext=com.xing.filter.ConsumerContextFilter
+providerContext=com.xing.filter.ProviderContextFilter
+minor=com.xing.filter.MinorFilter
