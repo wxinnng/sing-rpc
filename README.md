@@ -31,26 +31,80 @@
 
 ### 2.详细设计
 
-**使用流程?**
+#### **使用流程?**
 
 ​	**生产者**使用`sing-RPC`需要开启TCP服务器，监听**消费者**的请求，调用`init()`方法的时候，会首先加载`Application.properties`中的配置，生成全局的`RpcConfig`配置对象，`SPI`机制也会加载用户或者系统在`META-INF/rpc/system or custom` 中配置的类信息，这包括序列化方式、容错机制、注册中心的实现还有重试机制等等；紧接着就会对注册中心进行初始化，然后把对应的服务放到远程注册中心和本地注册中心，这样生产者就成功启动！
 
 ​	**消费者**使用`sing-RPC` 无需开启TCP服务器，消费者只需要通过接口的`class`对象和服务名称拿到代理对象，进行调用即可。
 
-**怎么拿到`SPI`加载的类对象?**
+#### **怎么拿到`SPI`加载的类对象?**
 
 ​	通过`SPI`加载的所有的类，都放在了一个`concurrentHashMap`中，`key`是一个顶层接口，`value`是也是一个`HashMap<className,class>`，这样通过两次哈希操作，就能拿到想要的类了。
 
-**支持哪些序列化机制?**
+#### **支持哪些序列化机制?**
 
 * `JSON`
 * `JDK`
 * `kryo`
 * `Hessian`
 
-**如何解决粘包和半包的?**
+#### **如何解决粘包和半包的?**
 
 ​	因为实现了自定义协议，请求头中的内容和长度是固定的，将请求的数据分两次拿，拿到`header`中的内容后，在`byte`数据中对应的位置，拿到请求体的长度，然后再次向下拿去对应长度的`byte`。
+
+#### **过滤器链的实现方式，过滤器的执行位置？**
+
+​	考虑到过滤器链有执行类型和执行优先级，所以将消费者和生产者的过滤链分别放到了两个优先队列中：
+
+```java
+private static final PriorityQueue<Filter> CONSUMER_FILTER_SET = new PriorityQueue<>(Comparator.comparingInt(Filter::getOrder));
+
+private static final PriorityQueue<Filter> PROVIDER_FILTER_SET = new PriorityQueue<>(Comparator.comparingInt(Filter::getOrder));
+```
+
+可以看到这里的排序是根据：Filter的一个方法`getOrder`,返回值是`Integer`,值越小，越优先执行。
+
+​	**过滤器的加载**，是在`FilterComponent`的静态代码块里，首先会通过`SPI`机制，获得所有的配置的`Filter`,
+
+```java
+SpiLoader.load(Filter.class);
+```
+
+然后，从全局配置中拿到配置的排除掉的过滤器：
+
+```java
+Set<String> filterExclusionSet = RpcApplication.getRpcConfig().getFilterExclusionSet();
+```
+
+最后就是放到两个队列中(根据不同的类型)：
+
+```java
+for(String key: allClazzByClassName.keySet()){
+    if(! filterExclusionSet.contains(key)){
+
+        //创建实例
+        Filter filter = FilterFactory.getInstance(key);
+
+        if(Objects.equals(filter.getType(), FilterKeys.CONSUMER_FILTER)){
+            CONSUMER_FILTER_SET.add(filter);
+        }else if(Objects.equals(filter.getType(),FilterKeys.PROVIDER_FILTER)){
+            PROVIDER_FILTER_SET.add(filter);
+        }else{
+            PROVIDER_FILTER_SET.add(filter);
+            CONSUMER_FILTER_SET.add(filter);
+        }
+    }
+```
+
+​	**执行位置:**
+
+* 消费者的过滤器：在代理对象中，请求发送前执行。
+* 生产者的过滤器：在请求处理，拿到RpcRequest，但是还没有执行业务逻辑代码的时候。
+* 最后一种过滤器，这两个位置都会被执行。
+
+
+
+
 
 **......**
 
