@@ -106,7 +106,8 @@ for(String key: allClazzByClassName.keySet()){
 
 ​	请求安全校验就是基于过滤器，流程如图：
 
-![image-20240908224032563](C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240908224032563.png)
+![image](https://github.com/user-attachments/assets/4b8513a8-9704-488c-b8b7-dd8b99e0b99d)
+
 
 
 
