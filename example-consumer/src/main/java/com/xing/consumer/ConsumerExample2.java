@@ -16,11 +16,7 @@ public class ConsumerExample2 {
         User user = new User();
         user.setName("wangxing");
         User newUser = userService.getUser(user);
-        if(newUser != null){
-            System.out.println(newUser.getName());
-        }else{
-            System.out.println("null");
-        }
+        System.out.println(newUser);
     }
 
 }

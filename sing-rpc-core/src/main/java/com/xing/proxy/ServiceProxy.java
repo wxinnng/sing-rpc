@@ -4,14 +4,12 @@ import cn.hutool.core.collection.CollUtil;
 import com.xing.RpcApplication;
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
-import com.xing.exception.RequestRejectException;
 import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyFactory;
 import com.xing.fault.tolerant.TolerantStrategy;
 import com.xing.fault.tolerant.TolerantStrategyFactory;
 import com.xing.filter.Filter;
 import com.xing.filter.FilterComponent;
-import com.xing.filter.FilterReject;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerFactory;
 import com.xing.model.RpcRequest;
@@ -19,8 +17,6 @@ import com.xing.model.RpcResponse;
 import com.xing.model.ServiceMetaInfo;
 import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
-import com.xing.serializer.Serializer;
-import com.xing.serializer.SerializerFactory;
 import com.xing.server.tcp.VertxTcpClient;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,33 +39,14 @@ public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-
-        //指定序列化器
-        Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
-
         //服务名称
         String serviceName = method.getDeclaringClass().getName();
-
         //构造请求
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args).build();
-
-
-
-        //调用过滤器链
-        PriorityQueue<Filter> consumerFilter = FilterComponent.getConsumerFilter();
-        for(Filter filter:consumerFilter){
-            if(!filter.doFilter(rpcRequest,null)){
-                log.info("未能通过过滤器链 -- request");
-                return null;
-            }
-        }
-
-        //序列化
-        byte[] data = serializer.serialize(rpcRequest);
 
         //动态获取所有注册的服务
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
@@ -92,20 +69,21 @@ public class ServiceProxy implements InvocationHandler {
         //获得负载到的服务信息
         ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(params,serviceMetaInfos);
 
-        /*发送HTTP请求
-            try(HttpResponse response = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress())
-                    .body(data)
-                    .execute()
-            ){
-                byte[] result = response.bodyBytes();
-                return serializer.deserialize(result, RpcResponse.class).getData();
-            }
-        */
+        //填上对应的token(这个是要解决服务提供端的token校验的步骤，和消费端的过滤器没有关系)。
+        rpcRequest.setToken(selectedServiceMetaInfo.getToken());
 
+
+        //为了增大过滤器的功能，过滤器链的执行放到这里，可以对请求参数、请求服务信息，负载均衡、容错、重试等，进行过滤。
+        PriorityQueue<Filter> consumerFilter = FilterComponent.getConsumerFilter();
+        for(Filter filter:consumerFilter){
+            if(!filter.doFilter(rpcRequest,null)){
+                log.error("未能通过过滤器链 -- request");
+                return null;
+            }
+        }
         //返回结果
         RpcResponse rpcResponse = null;
         try{
-
             //发送TCP请求
             //重试机制
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
@@ -121,17 +99,6 @@ public class ServiceProxy implements InvocationHandler {
             //执行容错机制
             tolerantStrategy.doTolerant(null,e);
         }
-
-        //调用provider的过滤器链
-        PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
-        for(Filter filter:providerFilter){
-            if(!filter.doFilter(rpcRequest,rpcResponse)){
-                log.info("未能通过过滤器链--response");
-                return null;
-            }
-        }
-
-
         //返回结果
         return rpcResponse.getData();
     }

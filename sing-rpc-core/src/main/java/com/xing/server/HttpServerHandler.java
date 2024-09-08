@@ -2,23 +2,29 @@ package com.xing.server;
 
 
 import com.xing.RpcApplication;
+import com.xing.filter.Filter;
+import com.xing.filter.FilterComponent;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.registry.LocalRegistry;
 import com.xing.serializer.Serializer;
 import com.xing.serializer.SerializerFactory;
+import com.xing.server.tcp.TcpServerHandler;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import lombok.extern.slf4j.Slf4j;
 
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.PriorityQueue;
 
 /**
  * HTTP 请求处理
  */
+@Slf4j
 public class HttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
@@ -28,10 +34,11 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
         final Serializer serializer = SerializerFactory.getInstance(RpcApplication.getRpcConfig().getSerializer());
 
         // 记录日志
-        System.out.println("Test:Received request: " + request.method() + " " + request.uri());
+        log.info("Test:Received request: {} {}" ,request.method() , request.uri());
 
         // 异步处理 HTTP 请求
         request.bodyHandler(body -> {
+
             byte[] bytes = body.getBytes();
             RpcRequest rpcRequest = null;
             try {
@@ -49,20 +56,15 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
                 return;
             }
 
-            try {
-                // 获取要调用的服务实现类，通过反射调用
-                Class<?> implClass = LocalRegistry.get(rpcRequest.getServiceName());
-                Method method = implClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
-                Object result = method.invoke(implClass.newInstance(), rpcRequest.getArgs());
-                // 封装返回结果
-                rpcResponse.setData(result);
-                rpcResponse.setDataType(method.getReturnType());
-                rpcResponse.setMessage("ok");
-            } catch (Exception e) {
-                e.printStackTrace();
-                rpcResponse.setMessage(e.getMessage());
-                rpcResponse.setException(e);
+            //调用provider的过滤器链
+            PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
+            for(Filter filter:providerFilter){
+                if(!filter.doFilter(null,rpcResponse)){
+                    return ;
+                }
             }
+
+            doService(rpcRequest, rpcResponse);
             // 响应
             doResponse(request, rpcResponse, serializer);
         });
@@ -79,13 +81,34 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
         HttpServerResponse httpServerResponse = request.response()
                 .putHeader("content-type", "application/json");
         try {
-            // 序列化
-            byte[] serialized = serializer.serialize(rpcResponse);
-            httpServerResponse.end(Buffer.buffer(serialized));
+            //结束此次调用
+            httpServerResponse.end(Buffer.buffer(serializer.serialize(rpcResponse)));
         } catch (IOException e) {
             e.printStackTrace();
             httpServerResponse.end(Buffer.buffer());
         }
     }
+    /**
+     * 执行业务逻辑代码
+     * @param rpcRequest
+     * @param rpcResponse
+     */
+    private void doService(RpcRequest rpcRequest, RpcResponse rpcResponse) {
+        try {
+            // 获取要调用的服务实现类，通过反射调用
+            Class<?> implClass = LocalRegistry.get(rpcRequest.getServiceName());
+            Method method = implClass.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
+            Object result = method.invoke(implClass.newInstance(), rpcRequest.getArgs());
+            // 封装返回结果
+            rpcResponse.setData(result);
+            rpcResponse.setDataType(method.getReturnType());
+            rpcResponse.setMessage("ok");
+        } catch (Exception e) {
+            e.printStackTrace();
+            rpcResponse.setMessage(e.getMessage());
+            rpcResponse.setException(e);
+        }
+    }
+
 }
 

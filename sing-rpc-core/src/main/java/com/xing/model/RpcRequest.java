@@ -26,7 +26,10 @@ public class RpcRequest implements Serializable {
      * 方法名称
      */
     private String methodName;
-
+    /**
+     * 请求token
+     */
+    private String token;
 
     /**
      * 服务版本

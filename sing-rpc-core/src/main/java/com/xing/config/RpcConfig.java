@@ -63,4 +63,12 @@ public class RpcConfig {
      * 默认没有排除
      */
     private Set<String> filterExclusionSet = new HashSet<>();
+    /**
+     * 是否开启请求校验
+     */
+    private Boolean identify = false;
+    /**
+     * 请求token
+     */
+    private String token;
 }

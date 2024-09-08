@@ -1,5 +1,6 @@
 package com.xing;
 
+import cn.hutool.core.util.StrUtil;
 import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
 import com.xing.constant.RpcConstant;
@@ -7,6 +8,7 @@ import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
 import com.xing.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
+import java.util.UUID;
 
 @Slf4j
 public class RpcApplication {
@@ -21,16 +23,23 @@ public class RpcApplication {
      */
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
+
         log.info("rpc init, config = {}", newRpcConfig.toString());
+
         // 注册中心初始化
         RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
         Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
         registry.init(registryConfig);
-        log.info("registry init, config = {}", registryConfig);
 
+        log.info("registry init, config = {}", registryConfig);
+        String token = RpcApplication.getRpcConfig().getToken();
+        if(StrUtil.isBlank(token)){
+            token = UUID.randomUUID().toString();
+            RpcApplication.getRpcConfig().setToken(token);
+        }
+        System.err.println("token: " + token);
         //创建并注册JVM Shutdown Hook ,JVM退出时，操作
         Runtime.getRuntime().addShutdownHook(new Thread(registry::destroy));
-
     }
 
 
@@ -40,6 +49,7 @@ public class RpcApplication {
         try{
             //加载配置文件到rpcConfig ,properties文件
             newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
+
         }catch(Exception e){
             try{
                 //yml文件

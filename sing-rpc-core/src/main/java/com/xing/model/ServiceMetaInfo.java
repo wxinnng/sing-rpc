@@ -10,6 +10,7 @@ public class ServiceMetaInfo {
     private String serviceHost;
     private Integer servicePort;
     private String serviceGroup;
+    private String token;
     /**
      * 获取服务键名
      *

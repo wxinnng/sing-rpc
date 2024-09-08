@@ -21,4 +21,6 @@ public interface RpcConstant {
 
     String DEFAULT_SERVICE_VERSION = "1.0.0";
 
+    String AUTHENTICATION_FAIL = "身份验证失败！";
+
 }

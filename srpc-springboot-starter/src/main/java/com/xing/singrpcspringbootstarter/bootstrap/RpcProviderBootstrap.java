@@ -1,5 +1,6 @@
 package com.xing.singrpcspringbootstarter.bootstrap;
 
+import cn.hutool.core.util.StrUtil;
 import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
@@ -11,6 +12,8 @@ import com.xing.singrpcspringbootstarter.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+
+import java.util.UUID;
 
 /**
  * Rpc服务提供者启动
@@ -54,6 +57,9 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             serviceMetaInfo.setServiceVersion(serviceVersion);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+
+            String token = RpcApplication.getRpcConfig().getToken();
+            serviceMetaInfo.setToken(token);
 
             try {
                 registry.register(serviceMetaInfo);
