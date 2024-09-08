@@ -102,7 +102,11 @@ for(String key: allClazzByClassName.keySet()){
 * 生产者的过滤器：在请求处理，拿到RpcRequest，但是还没有执行业务逻辑代码的时候。
 * 最后一种过滤器，这两个位置都会被执行。
 
+​	**请求安全校验**
 
+​	请求安全校验就是基于过滤器，流程如图：
+
+![image-20240908224032563](C:\Users\86198\AppData\Roaming\Typora\typora-user-images\image-20240908224032563.png)
 
 
 
