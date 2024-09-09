@@ -7,9 +7,12 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
 
+import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
+import com.xing.exception.EtcdRegistryConnectionException;
 import com.xing.model.ServiceMetaInfo;
 import io.etcd.jetcd.*;
+import io.etcd.jetcd.kv.PutResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.watch.WatchEvent;
@@ -19,6 +22,9 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class EtcdRegistry implements Registry {
@@ -61,6 +67,13 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void register(ServiceMetaInfo serviceMetaInfo) throws Exception {
+
+        //判断连接状态
+        if (!isEtcdClientInitialized()) {
+            //如果连接失败，就抛出异常
+            throw new EtcdRegistryConnectionException();
+        }
+
         // 创建 Lease 和 KV 客户端
         Lease leaseClient = client.getLeaseClient();
 
@@ -76,11 +89,27 @@ public class EtcdRegistry implements Registry {
         // 将键值对与租约关联起来，并设置过期时间
         PutOption putOption = PutOption.builder().withLeaseId(leaseId).build();
 
-        kvClient.put(key, value, putOption).get();
+        PutResponse putResponse = kvClient.put(key, value, putOption).get();
+
+
 
         //将注册的key放到set中去
         localRegistryNodeKeySet.add(registerKey);
 
+    }
+
+    private boolean isEtcdClientInitialized() {
+        // 检查 etcd 客户端是否已初始化并且连接成功
+        try {
+            // 尝试获取 etcd 的版本信息，如果成功则表示连接正常
+            // 拿到配置的过期时间
+            client.getClusterClient().listMember().get(
+                    RpcApplication.getRpcConfig().getRegistryConfig().getTimeout(), TimeUnit.MILLISECONDS);
+            return true;
+        } catch (InterruptedException | ExecutionException  | TimeoutException e) {
+            // 如果发生异常，表示连接失败
+            return false;
+        }
     }
 
     @Override
