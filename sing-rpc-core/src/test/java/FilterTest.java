@@ -1,6 +1,5 @@
 import com.xing.filter.Filter;
-import com.xing.filter.FilterComponent;
-import com.xing.spi.SpiLoader;
+import com.xing.filter.FilterChain;
 import org.junit.Test;
 
 import java.util.PriorityQueue;
@@ -22,16 +21,7 @@ public class FilterTest {
 
     @Test
     public void testFilter(){
-        PriorityQueue<Filter> consumerFilter = FilterComponent.getConsumerFilter();
-        PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
-        System.out.println("消费者过滤器");
-        for(Filter filter:consumerFilter){
-            System.out.println(filter + " order:" + filter.getOrder());
-        }
-        System.out.println("生产者过滤器");
-        for(Filter filter:providerFilter){
-            System.out.println(filter + " order:" + filter.getOrder());
-        }
+
     }
 
 }

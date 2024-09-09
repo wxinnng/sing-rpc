@@ -9,7 +9,7 @@ import com.xing.fault.retry.RetryStrategyFactory;
 import com.xing.fault.tolerant.TolerantStrategy;
 import com.xing.fault.tolerant.TolerantStrategyFactory;
 import com.xing.filter.Filter;
-import com.xing.filter.FilterComponent;
+import com.xing.filter.FilterChain;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerFactory;
 import com.xing.model.RpcRequest;
@@ -33,8 +33,6 @@ import java.util.PriorityQueue;
  */
 @Slf4j
 public class ServiceProxy implements InvocationHandler {
-
-
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -74,12 +72,10 @@ public class ServiceProxy implements InvocationHandler {
 
 
         //为了增大过滤器的功能，过滤器链的执行放到这里，可以对请求参数、请求服务信息，负载均衡、容错、重试等，进行过滤。
-        PriorityQueue<Filter> consumerFilter = FilterComponent.getConsumerFilter();
-        for(Filter filter:consumerFilter){
-            if(!filter.doFilter(rpcRequest,null)){
-                log.error("未能通过过滤器链 -- request");
-                return null;
-            }
+        boolean canContinue = FilterChain.doConsumerFilter(rpcRequest, null);
+        //不能通过过滤器链，直接返回空结果。
+        if(!canContinue){
+            return null;
         }
         //返回结果
         RpcResponse rpcResponse = null;

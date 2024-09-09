@@ -1,7 +1,7 @@
 package com.xing.server.tcp;
 
 import com.xing.filter.Filter;
-import com.xing.filter.FilterComponent;
+import com.xing.filter.FilterChain;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.protocol.*;
@@ -35,21 +35,11 @@ public class TcpServerHandler implements Handler<NetSocket> {
 
             //调用provider的过滤器链
             RpcResponse rpcResponse = new RpcResponse();
-            PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
-
-            Boolean canContinue = true;
-
-            for(Filter filter:providerFilter){
-                if(!filter.doFilter(rpcRequest,rpcResponse)){
-                    //只要有一个filter过去不，就直接返回就好了。
-                    canContinue = false;
-                    break ;
-                }
-            }
+            boolean canContinue = FilterChain.doProviderFilter(rpcRequest, rpcResponse);
 
             // 处理请求
             // 构造响应结果对象
-
+            //只用能通过过滤器链，才能继续执行，业务代码。
             if(canContinue){
                 doService(rpcRequest, rpcResponse);
             }

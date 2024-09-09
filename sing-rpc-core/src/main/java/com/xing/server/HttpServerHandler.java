@@ -3,13 +3,13 @@ package com.xing.server;
 
 import com.xing.RpcApplication;
 import com.xing.filter.Filter;
-import com.xing.filter.FilterComponent;
+import com.xing.filter.FilterChain;
+import com.xing.filter.FilterKeys;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.registry.LocalRegistry;
 import com.xing.serializer.Serializer;
 import com.xing.serializer.SerializerFactory;
-import com.xing.server.tcp.TcpServerHandler;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -57,12 +57,7 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
             }
 
             //调用provider的过滤器链
-            PriorityQueue<Filter> providerFilter = FilterComponent.getProviderFilter();
-            for(Filter filter:providerFilter){
-                if(!filter.doFilter(null,rpcResponse)){
-                    return ;
-                }
-            }
+            FilterChain.doProviderFilter(rpcRequest, rpcResponse);
 
             doService(rpcRequest, rpcResponse);
             // 响应

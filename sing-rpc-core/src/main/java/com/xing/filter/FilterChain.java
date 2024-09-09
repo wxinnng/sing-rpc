@@ -2,11 +2,13 @@ package com.xing.filter;
 
 
 import com.xing.RpcApplication;
+import com.xing.model.RpcRequest;
+import com.xing.model.RpcResponse;
 import com.xing.spi.SpiLoader;
 
 import java.util.*;
 
-public class FilterComponent {
+public class FilterChain {
 
 
     private static final PriorityQueue<Filter> CONSUMER_FILTER_SET = new PriorityQueue<>(Comparator.comparingInt(Filter::getOrder));
@@ -40,11 +42,42 @@ public class FilterComponent {
         }
     }
 
-    public static PriorityQueue<Filter> getProviderFilter(){
+    private static PriorityQueue<Filter> getProviderFilter(){
         return PROVIDER_FILTER_SET;
     }
-    public static PriorityQueue<Filter> getConsumerFilter(){
+    private static PriorityQueue<Filter> getConsumerFilter(){
         return CONSUMER_FILTER_SET;
+    }
+
+
+    /**
+     * 执行提供者的过滤器链
+     * @param rpcRequest
+     * @param rpcResponse
+     * @return
+     */
+    public static boolean doProviderFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
+        for(Filter filter:getProviderFilter()){
+            if(!filter.doFilter(rpcRequest,rpcResponse)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 执行消费者的过滤器链
+     * @param rpcRequest
+     * @param rpcResponse
+     * @return
+     */
+    public static boolean doConsumerFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
+        for(Filter filter:getConsumerFilter()){
+            if(!filter.doFilter(rpcRequest,rpcResponse)){
+                return false;
+            }
+        }
+        return true;
     }
 
 }
