@@ -52,7 +52,6 @@ public class ServiceProxy implements InvocationHandler {
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
-        serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
 
         if(CollUtil.isEmpty(serviceMetaInfos)){

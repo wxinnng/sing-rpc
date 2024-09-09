@@ -38,7 +38,7 @@ public class RpcConfig {
      * mock测试功能开关
      */
     private boolean mock = false;
-
+    private String serviceGroup = "default";
     /**
      * 默认序列化器
      */

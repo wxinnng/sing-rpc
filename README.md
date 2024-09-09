@@ -110,6 +110,12 @@ for(String key: allClazzByClassName.keySet()){
 
 
 
+#### 服务的分区与版本？
+
+![image](https://github.com/user-attachments/assets/798e347f-d7bc-44dc-97e9-7c139a87a82e)
+
+
+
 **......**
 
 ## 三、技术介绍

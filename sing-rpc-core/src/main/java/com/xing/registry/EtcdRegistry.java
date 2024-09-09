@@ -68,6 +68,7 @@ public class EtcdRegistry implements Registry {
         long leaseId = leaseClient.grant(30).get().getID();
 
         // 设置要存储的键值对
+        // key :  rpc/service/group/version/ host:port value: serviceInfo
         String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
         ByteSequence key = ByteSequence.from(registerKey, StandardCharsets.UTF_8);
         ByteSequence value = ByteSequence.from(JSONUtil.toJsonStr(serviceMetaInfo), StandardCharsets.UTF_8);
@@ -99,7 +100,7 @@ public class EtcdRegistry implements Registry {
         }
 
 
-        // 前缀搜索，结尾一定要加 '/' /rpc/myService1.9/ 下面可能会有多个实例。
+        // 前缀搜索，结尾一定要加 '/' /rpc/service/group/version/ 下面可能会有多个实例。
         String searchPrefix = ETCD_ROOT_PATH + serviceKey + "/";
 
         try {
