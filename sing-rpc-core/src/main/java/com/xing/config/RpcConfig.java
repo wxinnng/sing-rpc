@@ -4,13 +4,10 @@ package com.xing.config;
 import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyKeys;
 import com.xing.fault.tolerant.TolerantStrategyKeys;
-import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerKeys;
-import com.xing.loadbalancer.RoundRobinLoadBalancer;
 import com.xing.serializer.SerializerKeys;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

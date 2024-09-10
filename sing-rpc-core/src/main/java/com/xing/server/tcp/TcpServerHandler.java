@@ -1,6 +1,5 @@
 package com.xing.server.tcp;
 
-import com.xing.filter.Filter;
 import com.xing.filter.FilterChain;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.PriorityQueue;
 
 /**
  * 服务端处理器
@@ -43,6 +41,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
             if(canContinue){
                 doService(rpcRequest, rpcResponse);
             }
+
             ProtocolMessage.Header header = protocolMessage.getHeader();
             // 发送响应，编码
             header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());

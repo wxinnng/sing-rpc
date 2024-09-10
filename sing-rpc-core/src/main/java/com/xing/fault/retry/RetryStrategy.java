@@ -13,5 +13,4 @@ public interface RetryStrategy {
      * @throws Exception
      */
     RpcResponse doRetry(Callable<RpcResponse> callable) throws Exception;
-
 }

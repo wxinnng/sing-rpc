@@ -12,7 +12,7 @@ target/
 demo/*.txt
 
 demo/**/*.txt
-
+**/**/test/*.java
 
 *.jar
 *.war
