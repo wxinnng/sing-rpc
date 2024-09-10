@@ -31,6 +31,8 @@
 
 ### 1.整体流程
 
+![image](https://github.com/user-attachments/assets/add119b5-d9f6-44ca-aca3-9d7fc2c1d53b)
+
 
 ### 2.详细设计
 
