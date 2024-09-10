@@ -94,6 +94,14 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- zookeeper -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+
+
 
         <!-- https://github.com/rholder/guava-retrying -->
         <dependency>
