@@ -52,6 +52,7 @@ public class ServiceProxy implements InvocationHandler {
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
+
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
 
         if(CollUtil.isEmpty(serviceMetaInfos)){
@@ -88,6 +89,7 @@ public class ServiceProxy implements InvocationHandler {
             );
 
         }catch (Exception e){
+            log.error("请求出错，执行重试: {} 和容错机制: {}",rpcConfig.getRetryStrategy(),rpcConfig.getTolerantStrategy());
             //启用容错机制
             //拿到配置的策略
             TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());

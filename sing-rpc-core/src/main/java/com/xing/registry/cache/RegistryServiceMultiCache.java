@@ -1,4 +1,4 @@
-package com.xing.registry;
+package com.xing.registry.cache;
 
 import com.xing.model.ServiceMetaInfo;
 
@@ -23,7 +23,7 @@ public class RegistryServiceMultiCache {
      * @param newServiceCache 更新后的缓存列表
      * @return
      */
-    void writeCache(String serviceKey, List<ServiceMetaInfo> newServiceCache) {
+    public void writeCache(String serviceKey, List<ServiceMetaInfo> newServiceCache) {
         this.serviceCache.put(serviceKey, newServiceCache);
     }
 
@@ -33,14 +33,14 @@ public class RegistryServiceMultiCache {
      * @param serviceKey
      * @return
      */
-    List<ServiceMetaInfo> readCache(String serviceKey) {
+    public List<ServiceMetaInfo> readCache(String serviceKey) {
         return this.serviceCache.get(serviceKey);
     }
 
     /**
      * 清空缓存
      */
-    void clearCache(String serviceKey) {
+    public void clearCache(String serviceKey) {
         this.serviceCache.remove(serviceKey);
     }
 }

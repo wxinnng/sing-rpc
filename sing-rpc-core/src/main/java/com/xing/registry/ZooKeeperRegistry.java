@@ -4,6 +4,8 @@ package com.xing.registry;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.xing.config.RegistryConfig;
 import com.xing.model.ServiceMetaInfo;
+import com.xing.registry.cache.RegistryServiceCache;
+import com.xing.registry.cache.RegistryServiceMultiCacheByCaffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -36,10 +38,7 @@ public class ZooKeeperRegistry implements Registry {
      */
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
 
-    /**
-     * 注册中心服务缓存
-     */
-    private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
+    private final RegistryServiceMultiCacheByCaffeine registryCache = new RegistryServiceMultiCacheByCaffeine(this);
 
     /**
      * 正在监听的 key 集合
@@ -102,32 +101,27 @@ public class ZooKeeperRegistry implements Registry {
 
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
-        // 优先从缓存获取服务
-        List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceCache.readCache();
-        if (cachedServiceMetaInfoList != null) {
-            return cachedServiceMetaInfoList;
-        }
-
-        try {
-            // 查询服务信息
-            Collection<ServiceInstance<ServiceMetaInfo>> serviceInstanceList = serviceDiscovery.queryForInstances(serviceKey);
-
-            // 解析服务信息
-            List<ServiceMetaInfo> serviceMetaInfoList = serviceInstanceList.stream()
-                    .map(ServiceInstance::getPayload)
-                    .collect(Collectors.toList());
-
-            // 写入服务缓存
-            registryServiceCache.writeCache(serviceMetaInfoList);
-            return serviceMetaInfoList;
-        } catch (Exception e) {
-            throw new RuntimeException("获取服务列表失败", e);
-        }
+        return registryCache.readCache(serviceKey);
     }
 
     @Override
     public void heartBeat() {
         // 不需要心跳机制，建立了临时节点，如果服务器故障，则临时节点直接丢失
+    }
+
+    @Override
+    public List<ServiceMetaInfo> getServiceInstance(String serviceKey) {
+        try {
+            // 查询服务信息
+            Collection<ServiceInstance<ServiceMetaInfo>> serviceInstanceList = serviceDiscovery.queryForInstances(serviceKey);
+
+            // 返回结果
+            return serviceInstanceList.stream()
+                    .map(ServiceInstance::getPayload)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("获取服务列表失败", e);
+        }
     }
 
     /**
@@ -145,8 +139,8 @@ public class ZooKeeperRegistry implements Registry {
             curatorCache.listenable().addListener(
                     CuratorCacheListener
                             .builder()
-                            .forDeletes(childData -> registryServiceCache.clearCache())
-                            .forChanges(((oldNode, node) -> registryServiceCache.clearCache()))
+                            .forDeletes(childData -> registryCache.removeCache(serviceNodeKey))
+                            .forChanges(((oldNode, node) -> registryCache.removeCache(serviceNodeKey)))
                             .build()
             );
         }

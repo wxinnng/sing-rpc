@@ -1,5 +1,6 @@
 package com.xing.registry;
 
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xing.config.RegistryConfig;
 import com.xing.model.ServiceMetaInfo;
 
@@ -35,6 +36,7 @@ public interface Registry {
      */
     List<ServiceMetaInfo> serviceDiscovery(String serviceName);
 
+
     /**
      * 销毁
      */
@@ -44,6 +46,13 @@ public interface Registry {
      * 心跳检测
      */
     void heartBeat();
+
+    /**
+     * 获得各个分组和版本的实例
+     * @param serviceName
+     * @return
+     */
+    List<ServiceMetaInfo> getServiceInstance(String serviceName);
 
 
     /**

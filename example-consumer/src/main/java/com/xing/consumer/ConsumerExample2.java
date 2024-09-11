@@ -17,6 +17,8 @@ public class ConsumerExample2 {
         user.setName("wangxing");
         User newUser = userService.getUser(user);
         System.out.println(newUser.getName());
+        User user1 = userService.getUser(user);
+        System.out.println(user1.getName());
     }
 
 }

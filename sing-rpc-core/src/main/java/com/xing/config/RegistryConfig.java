@@ -1,5 +1,6 @@
 package com.xing.config;
 
+import com.xing.registry.RegistryKeys;
 import lombok.Data;
 
 /**
@@ -19,27 +20,34 @@ public class RegistryConfig {
     private String address ;
 
     /**
+     * 最多的服务数量
+     */
+    private Integer maxService = RegistryKeys.DEFAULT_MAX_SERVICE;
+
+    /**
      * 用户名
      */
     private String username;
-
     /**
      * 密码
      */
     private String password;
-
     /**
      * 超时时间（单位毫秒）
      */
     private Long timeout = 10000L;
 
-    public Long getTimeout() {
-        return timeout == null? 10000L : this.timeout;
-    }
+    /**
+     * 基于最近使用频率的舍去机制
+     * @return
+     */
+    private Boolean LRU = false;
 
-    public String getRegistry() {
-        return this.registry == null ? "etcd" : this.registry;
-    }
+    /**
+     * 舍弃时间
+     * @return
+     */
+    private Long expireTime = 300L;
 
     public String getAddress() {
         if(this.address != null)

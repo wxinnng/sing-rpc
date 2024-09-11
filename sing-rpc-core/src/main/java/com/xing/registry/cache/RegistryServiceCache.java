@@ -1,4 +1,4 @@
-package com.xing.registry;
+package com.xing.registry.cache;
 
 
 import com.xing.model.ServiceMetaInfo;
@@ -21,7 +21,7 @@ public class RegistryServiceCache {
      * @param newServiceCache
      * @return
      */
-    void writeCache(List<ServiceMetaInfo> newServiceCache) {
+    public void writeCache(List<ServiceMetaInfo> newServiceCache) {
         this.serviceCache = newServiceCache;
     }
 
@@ -30,15 +30,16 @@ public class RegistryServiceCache {
      *
      * @return
      */
-    List<ServiceMetaInfo> readCache() {
+    public List<ServiceMetaInfo> readCache() {
         return this.serviceCache;
     }
 
     /**
      * 清空缓存
      */
-    void clearCache() {
+    public void clearCache() {
         this.serviceCache = null;
     }
+
 }
 
