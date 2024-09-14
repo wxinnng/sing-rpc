@@ -49,8 +49,12 @@ public class ConsumerFilterChain implements FilterChain{
         }
         //拿到下一个过滤器
         Filter filter = consumerFilterIterator.next();
+        //执行过滤器的前置方法
+        filter.preprocessing(rpcRequest,rpcResponse);
         //执行过滤器
         filter.doFilter(rpcRequest,rpcResponse,this);
+        //执行过滤器的后置方法
+        filter.postprocessing(rpcRequest,rpcResponse);
     }
 
 

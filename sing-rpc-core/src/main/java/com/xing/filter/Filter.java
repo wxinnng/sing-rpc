@@ -33,7 +33,7 @@ public interface Filter {
      * @param rpcRequest
      * @param rpcResponse
      */
-    default void Preprocessing(RpcRequest rpcRequest,RpcResponse rpcResponse){
+    default void preprocessing(RpcRequest rpcRequest,RpcResponse rpcResponse){
 
     }
 
@@ -42,7 +42,7 @@ public interface Filter {
      * @param rpcRequest
      * @param rpcResponse
      */
-    default  void Postprocessing(RpcRequest rpcRequest,RpcResponse rpcResponse){
+    default  void postprocessing(RpcRequest rpcRequest,RpcResponse rpcResponse){
 
     }
 }

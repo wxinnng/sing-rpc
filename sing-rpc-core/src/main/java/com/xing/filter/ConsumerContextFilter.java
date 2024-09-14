@@ -12,9 +12,7 @@ public class ConsumerContextFilter implements ConsumerFilter {
 
     @Override
     public void doFilter(RpcRequest rpcRequest, RpcResponse response, FilterChain filterChain) {
-        log.info("consumerContextFilter -- 前置");
         filterChain.doFilter(rpcRequest,response);
-        log.info("consumerContextFilter -- 后置");
     }
 
     @Override
