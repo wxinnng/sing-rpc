@@ -8,12 +8,13 @@ import lombok.extern.slf4j.Slf4j;
  * 消费者端的过滤器
  */
 @Slf4j
-public class ConsumerContextFilter implements Filter {
+public class ConsumerContextFilter implements ConsumerFilter {
 
     @Override
-    public boolean doFilter(RpcRequest request, RpcResponse response) {
-        log.info("经过consumerContextFilter");
-        return true;
+    public void doFilter(RpcRequest rpcRequest, RpcResponse response, FilterChain filterChain) {
+        log.info("consumerContextFilter -- 前置");
+        filterChain.doFilter(rpcRequest,response);
+        log.info("consumerContextFilter -- 后置");
     }
 
     @Override

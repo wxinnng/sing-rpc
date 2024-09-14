@@ -5,6 +5,7 @@ import com.xing.RpcApplication;
 import com.xing.filter.Filter;
 import com.xing.filter.FilterChain;
 import com.xing.filter.FilterKeys;
+import com.xing.filter.ProviderFilterChain;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.registry.LocalRegistry;
@@ -56,12 +57,17 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
                 return;
             }
 
-            //调用provider的过滤器链
-            FilterChain.doProviderFilter(rpcRequest, rpcResponse);
+            try{
+                ProviderFilterChain providerFilterChain = new ProviderFilterChain();
+                providerFilterChain.doFilter(rpcRequest,rpcResponse);
+                doService(rpcRequest, rpcResponse);
+            }catch (Exception e){
+                log.info("请求失败！");
+            }finally{
+                // 响应
+                doResponse(request, rpcResponse, serializer);
+            }
 
-            doService(rpcRequest, rpcResponse);
-            // 响应
-            doResponse(request, rpcResponse, serializer);
         });
     }
 

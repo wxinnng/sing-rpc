@@ -12,8 +12,8 @@ public class FilterFactory {
      * @param key
      * @return
      */
-    public static Filter getInstance(String key){
-        return SpiLoader.getInstance(Filter.class,key);
+    public static Filter getInstance(Class tClass,String key){
+        return SpiLoader.getInstance(tClass,key);
     }
 
 

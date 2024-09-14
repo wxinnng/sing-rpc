@@ -8,6 +8,8 @@ import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyFactory;
 import com.xing.fault.tolerant.TolerantStrategy;
 import com.xing.fault.tolerant.TolerantStrategyFactory;
+import com.xing.filter.ConsumerFilter;
+import com.xing.filter.ConsumerFilterChain;
 import com.xing.filter.Filter;
 import com.xing.filter.FilterChain;
 import com.xing.loadbalancer.LoadBalancer;
@@ -69,14 +71,12 @@ public class ServiceProxy implements InvocationHandler {
 
         //填上对应的token(这个是要解决服务提供端的token校验的步骤，和消费端的过滤器没有关系)。
         rpcRequest.setToken(selectedServiceMetaInfo.getToken());
+        ;
+
+        ConsumerFilterChain consumerFilterChain = new ConsumerFilterChain();
+        consumerFilterChain.doFilter(rpcRequest,null);
 
 
-        //为了增大过滤器的功能，过滤器链的执行放到这里，可以对请求参数、请求服务信息，负载均衡、容错、重试等，进行过滤。
-        boolean canContinue = FilterChain.doConsumerFilter(rpcRequest, null);
-        //不能通过过滤器链，直接返回空结果。
-        if(!canContinue){
-            return null;
-        }
         //返回结果
         RpcResponse rpcResponse = null;
         try{

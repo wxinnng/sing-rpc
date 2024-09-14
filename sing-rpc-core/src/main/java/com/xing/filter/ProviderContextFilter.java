@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  * 生产端的过滤器
  */
 @Slf4j
-public class ProviderContextFilter implements Filter{
+public class ProviderContextFilter implements ProviderFilter{
 
     @Override
     public Integer getType() {
@@ -16,9 +16,10 @@ public class ProviderContextFilter implements Filter{
     }
 
     @Override
-    public boolean doFilter(RpcRequest request, RpcResponse response) {
-        log.info("经过 providerContextFilter");
-        return true;
+    public void doFilter(RpcRequest request, RpcResponse response, FilterChain filterChain) {
+        log.info("providerContextFilter -- 前置处理");
+        filterChain.doFilter(request,response);
+        log.info("providerContextFilter -- 后置处理");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.xing.server.tcp;
 
-import com.xing.filter.FilterChain;
+
+import com.xing.filter.ProviderFilterChain;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.protocol.*;
@@ -33,15 +34,15 @@ public class TcpServerHandler implements Handler<NetSocket> {
 
             //调用provider的过滤器链
             RpcResponse rpcResponse = new RpcResponse();
-            boolean canContinue = FilterChain.doProviderFilter(rpcRequest, rpcResponse);
 
-            // 处理请求
-            // 构造响应结果对象
-            //只用能通过过滤器链，才能继续执行，业务代码。
-            if(canContinue){
-                doService(rpcRequest, rpcResponse);
-            }
-
+           try{
+               //尝试执行过滤器链
+               ProviderFilterChain providerFilterChain = new ProviderFilterChain();
+               providerFilterChain.doFilter(rpcRequest, rpcResponse);
+               doService(rpcRequest, rpcResponse);
+           }catch (Exception e){
+               log.info("请求有异常！");
+           }
             ProtocolMessage.Header header = protocolMessage.getHeader();
             // 发送响应，编码
             header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getKey());
