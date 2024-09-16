@@ -44,6 +44,8 @@
 
 ​	配置文件中，对`mock`设置成true即可，对于没有编写完的业务代码，框架会默生成默认数据。（注意如果使用了mock功能，那么所有的服务都是mock的）
 
+​	**`mock`测试对象的生成采用的是递归地方法，如果对象中有递归引用，不适合`Mock`测试**
+
 #### **使用流程?**
 
 ​	**生产者**使用`sing-RPC`需要开启TCP服务器，监听**消费者**的请求，调用`init()`方法的时候，会首先加载`Application.properties`中的配置，生成全局的`RpcConfig`配置对象，`SPI`机制也会加载用户或者系统在`META-INF/rpc/system or custom` 中配置的类信息，这包括序列化方式、容错机制、注册中心的实现还有重试机制等等；紧接着就会对注册中心进行初始化，然后把对应的服务放到远程注册中心和本地注册中心，这样生产者就成功启动！
@@ -67,53 +69,72 @@
 
 #### **过滤器链的实现方式，过滤器的执行位置？**
 
-​	考虑到过滤器链有执行类型和执行优先级，所以将消费者和生产者的过滤链分别放到了两个优先队列中：
+**过滤器链采用责任链的设计模式完成**
+
+​	这里就拿`provider`端的过滤器链举例子，加载`ProviderFilterChain`类的时候，首先会通过`SPI`机制，加载对应目录文件下的所有的类，并且通过全局配置对象，拿到用户排除的过滤器集合，进行比对，如果没有被排除的话，会通过`FilterFactory`反射生成对应的实例，放到过滤器容器中，也就一个`PriorityQueue`中。
 
 ```java
-private static final PriorityQueue<Filter> CONSUMER_FILTER_SET = new PriorityQueue<>(Comparator.comparingInt(Filter::getOrder));
+//加载实例到对应的集合中去。
+static{
+    //加载所有的实现类
+    SpiLoader.load(ProviderFilter.class);
 
-private static final PriorityQueue<Filter> PROVIDER_FILTER_SET = new PriorityQueue<>(Comparator.comparingInt(Filter::getOrder));
-```
+    Map<String, Class<?>> allClazzByClassName = SpiLoader.getAllClazzByClassName(ProviderFilter.class.getName());
 
-可以看到这里的排序是根据：Filter的一个方法`getOrder`,返回值是`Integer`,值越小，越优先执行。
+    Set<String> filterExclusionSet = RpcApplication.getRpcConfig().getFilterExclusionSet();
 
-​	**过滤器的加载**，是在`FilterComponent`的静态代码块里，首先会通过`SPI`机制，获得所有的配置的`Filter`,
+    for(String key: allClazzByClassName.keySet()){
+        if(! filterExclusionSet.contains(key)){
 
-```java
-SpiLoader.load(Filter.class);
-```
-
-然后，从全局配置中拿到配置的排除掉的过滤器：
-
-```java
-Set<String> filterExclusionSet = RpcApplication.getRpcConfig().getFilterExclusionSet();
-```
-
-最后就是放到两个队列中(根据不同的类型)：
-
-```java
-for(String key: allClazzByClassName.keySet()){
-    if(! filterExclusionSet.contains(key)){
-
-        //创建实例
-        Filter filter = FilterFactory.getInstance(key);
-
-        if(Objects.equals(filter.getType(), FilterKeys.CONSUMER_FILTER)){
-            CONSUMER_FILTER_SET.add(filter);
-        }else if(Objects.equals(filter.getType(),FilterKeys.PROVIDER_FILTER)){
+            //创建实例
+            Filter filter = FilterFactory.getInstance(ProviderFilter.class, key);
+            //放到队列中
             PROVIDER_FILTER_SET.add(filter);
-        }else{
-            PROVIDER_FILTER_SET.add(filter);
-            CONSUMER_FILTER_SET.add(filter);
         }
     }
+}
 ```
 
-​	**执行位置:**
+​	之后，在使用到过滤器链的时候，创建一个对象，调用doFilter方法即可。
 
-* 消费者的过滤器：在代理对象中，请求发送前执行。
-* 生产者的过滤器：在请求处理，拿到RpcRequest，但是还没有执行业务逻辑代码的时候。
-* 最后一种过滤器，这两个位置都会被执行。
+```java
+//尝试执行过滤器链
+ProviderFilterChain providerFilterChain = new ProviderFilterChain();
+providerFilterChain.doFilter(rpcRequest, rpcResponse);
+```
+
+​	`doFilter`方法使用的是责任链的设计模式，通过对优先队列的迭代遍历，进行过滤器的执行，同时也会执行该过滤器链的前置和后置方法。
+
+```java
+public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
+    //后面没有过滤器了，就直接返回
+    if(!filterIterator.hasNext()){
+        return ;
+    }
+    //拿到下一个过滤器
+    Filter filter = filterIterator.next();
+    //执行过滤器的前置方法
+    filter.preprocessing(rpcRequest,rpcResponse);
+    //执行过滤器
+    filter.doFilter(rpcRequest,rpcResponse,this);
+    //执行过滤器的后置方法
+    filter.postprocessing(rpcRequest,rpcResponse);
+}
+```
+
+​	如果用户想要对系统默认的过滤器进行扩展的话，可以继承对应的过滤器链，然后重写前置或者后置方法，并将该类放到对应的`SPI`文件下，即可使用。
+
+**继承关系**
+
+* `Filter`
+
+![image](https://github.com/user-attachments/assets/f91b3650-f360-4907-b251-4aecbcf9b81d)
+
+* 过滤器链
+
+![image](https://github.com/user-attachments/assets/81572e52-2af1-4124-92f1-5cd340597b6c)
+
+**基于过滤器链实现的功能**
 
 ​	**请求安全校验**
 
