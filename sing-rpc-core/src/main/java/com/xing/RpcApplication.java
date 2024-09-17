@@ -22,6 +22,16 @@ public class RpcApplication {
      * @param newRpcConfig
      */
     public static void init(RpcConfig newRpcConfig) {
+
+        System.out.println("--[[\n" +
+                "   _____ _                                  \n" +
+                "  / ___/(_)___  ____ _      _________  _____\n" +
+                "  \\__ \\/ / __ \\/ __ `/_____/ ___/ __ \\/ ___/\n" +
+                " ___/ / / / / / /_/ /_____/ /  / /_/ / /__  \n" +
+                "/____/_/_/ /_/\\__, /     /_/  / .___/\\___/  \n" +
+                "             /____/          /_/            \n" +
+                "--]]");
+
         rpcConfig = newRpcConfig;
 
         log.info("rpc init, config = {}", newRpcConfig.toString());

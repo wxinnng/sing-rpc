@@ -1,5 +1,5 @@
 rpc:
-  serverPort: 9059
+  serverPort: 9039
   serializer: json
   name: wangxing
   identify: true

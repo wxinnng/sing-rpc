@@ -8,6 +8,7 @@ import com.xing.service.UserService;
 public class ConsumerExample2 {
 
     public static void main(String[] args) {
+
         //服务初始化
         ConsumerBootstrap.init();
 
