@@ -71,7 +71,6 @@ public class ServiceProxy implements InvocationHandler {
 
         //填上对应的token(这个是要解决服务提供端的token校验的步骤，和消费端的过滤器没有关系)。
         rpcRequest.setToken(selectedServiceMetaInfo.getToken());
-        ;
 
         ConsumerFilterChain consumerFilterChain = new ConsumerFilterChain();
         consumerFilterChain.doFilter(rpcRequest,null);

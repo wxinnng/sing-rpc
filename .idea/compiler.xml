@@ -8,8 +8,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="sing-rpc-easy" />
+        <module name="sing-rpc-common" />
         <module name="example-springboot-provider" />
         <module name="example-springboot-consumer" />
+        <module name="sing-rpc-sm" />
         <module name="example-provider" />
         <module name="example-common" />
         <module name="srpc-springboot-starter" />
@@ -20,6 +22,7 @@
     <bytecodeTargetLevel>
       <module name="example" target="11" />
       <module name="sing-rpc-spring-boot-starter" target="1.8" />
+      <module name="srsm" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

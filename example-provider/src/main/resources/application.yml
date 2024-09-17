@@ -5,3 +5,4 @@ rpc:
   identify: true
   version: 2.1
   serviceGroup: beijing
+  srsm: true

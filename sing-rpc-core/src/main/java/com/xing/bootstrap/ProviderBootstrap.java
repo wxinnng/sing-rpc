@@ -1,6 +1,5 @@
 package com.xing.bootstrap;
 
-import cn.hutool.core.util.StrUtil;
 import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
@@ -10,10 +9,11 @@ import com.xing.registry.LocalRegistry;
 import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
 import com.xing.server.tcp.VertxTcpServer;
+import com.xing.service.SystemService;
+import com.xing.service.SystemServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 服务提供初始化类
@@ -25,6 +25,19 @@ public class ProviderBootstrap {
         RpcApplication.init();
         //全局配置
         final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        //判断是否需要注册系统服务
+        if(rpcConfig.getSrsm()){
+            log.info("加载srsm相关的系统服务");
+
+            //拿到系统服务实现类的class类
+            Class<? extends SystemService> aclass = SystemServiceFactory.getInstanceClass(rpcConfig.getRegistryConfig().getRegistry());
+            //封装一个服务
+            ServiceRegisterInfo<SystemService> systemServiceServiceRegisterInfo = new ServiceRegisterInfo<>();
+            systemServiceServiceRegisterInfo.setServiceName(SystemService.class.getName());
+            systemServiceServiceRegisterInfo.setImplClass(aclass);
+            //放到服务列表中，在后面进行注册
+            serviceRegisterInfoList.add(systemServiceServiceRegisterInfo);
+        }
         //注册服务
         for(ServiceRegisterInfo<?> serviceRegisterInfo: serviceRegisterInfoList){
             //服务名称

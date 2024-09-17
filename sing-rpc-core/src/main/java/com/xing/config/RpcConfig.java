@@ -71,4 +71,8 @@ public class RpcConfig {
      * 请求token
      */
     private String token;
+    /**
+     * 是否需要可视化
+     */
+    private Boolean srsm = false;
 }

@@ -14,6 +14,8 @@
         <module>example-provider</module>
         <module>sing-rpc-easy</module>
         <module>sing-rpc-core</module>
+        <module>sing-rpc-sm</module>
+        <module>sing-rpc-common</module>
     </modules>
 
     <properties>
