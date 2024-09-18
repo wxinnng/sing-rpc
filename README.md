@@ -148,9 +148,11 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 ![image](https://github.com/user-attachments/assets/798e347f-d7bc-44dc-97e9-7c139a87a82e)
 
+#### **`SRSM(sing-rpc service management)`服务怎么做的？**
 
+​	**`srsm`就是基于`sing-rpc`来做的 !**生产者端引入`sing-rpc`的时候，框架内部会自动注册几个系统服务（这与可视化相关，前提是`srsm`配置开启），`srsm`作为一个消费者，调用生产者的远程系统服务，然后通过vert.x与前端进行http交互。
 
-**......**
+​	`srsm`也是采取的三层架构，即：控制层、服务层和数据层，数据层并不是持久化的，而是采用的缓存实现，所以的服务Bean，都是采用**工厂 + 单例**来实现，并且是**懒加载**，保证了Bean的可重用性。
 
 ## 三、技术介绍
 

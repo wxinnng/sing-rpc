@@ -17,7 +17,7 @@ public class ProviderExample2 {
         ServiceRegisterInfo<UserServiceImpl> serviceRegisterInfo = new ServiceRegisterInfo<>(UserService.class.getName(), UserServiceImpl.class);
         //添加到注册列表
         serviceRegisterInfoList.add(serviceRegisterInfo);
-
+        //初始化服务提供者
         ProviderBootstrap.init(serviceRegisterInfoList);
     }
 

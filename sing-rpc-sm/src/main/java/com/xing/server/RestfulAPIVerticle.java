@@ -1,21 +1,22 @@
 package com.xing.server;
 
+import com.google.protobuf.Api;
+import com.xing.cache.api.ApiCache;
+import com.xing.controller.IApiController;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class RestfulAPIVerticle extends AbstractVerticle {
-
-    private Map<String, JsonObject> products = new HashMap<>();
 
     @Override
     public void start() {
@@ -28,8 +29,14 @@ public class RestfulAPIVerticle extends AbstractVerticle {
         // 启用 BodyHandler 以处理请求体
         router.route().handler(BodyHandler.create());
 
-        // 定义 RESTful API 路由
-        router.get("/api/products/:productID").handler(this::handleGetProduct);
+
+        Iterator entryIterator = ApiCache.getEntryIterator();
+        while (entryIterator.hasNext()) {
+            Map.Entry<String, IApiController> entry = (Map.Entry<String, IApiController>) entryIterator.next();
+            String path = entry.getKey();
+            IApiController controller = entry.getValue();
+            router.route(path).handler(controller::handle);
+        }
 
         router.route("/srsm/*").handler(StaticHandler.create().setCachingEnabled(false));
         // 将路由器与服务器关联
@@ -40,23 +47,6 @@ public class RestfulAPIVerticle extends AbstractVerticle {
                 System.err.println("Failed to start HTTP server");
             }
         });
-    }
-
-    private void handleGetProduct(RoutingContext routingContext) {
-        System.err.println("Resolution!!!!!!!!");
-        String productID = routingContext.request().getParam("productID");
-        JsonObject product = products.get(productID);
-
-        if (product == null) {
-            routingContext.response()
-                    .setStatusCode(404)
-                    .putHeader("content-type", "application/json")
-                    .end(new JsonObject().put("message", "Product not found").encodePrettily());
-        } else {
-            routingContext.response()
-                    .putHeader("content-type", "application/json")
-                    .end(product.encodePrettily());
-        }
     }
 
 

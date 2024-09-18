@@ -3,15 +3,11 @@ package com.xing.proxy;
 import cn.hutool.core.collection.CollUtil;
 import com.xing.RpcApplication;
 import com.xing.config.RpcConfig;
-import com.xing.constant.RpcConstant;
 import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyFactory;
 import com.xing.fault.tolerant.TolerantStrategy;
 import com.xing.fault.tolerant.TolerantStrategyFactory;
-import com.xing.filter.ConsumerFilter;
 import com.xing.filter.ConsumerFilterChain;
-import com.xing.filter.Filter;
-import com.xing.filter.FilterChain;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerFactory;
 import com.xing.model.RpcRequest;
@@ -54,7 +50,6 @@ public class ServiceProxy implements InvocationHandler {
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName(serviceName);
-
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
 
         if(CollUtil.isEmpty(serviceMetaInfos)){
