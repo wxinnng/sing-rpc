@@ -154,6 +154,8 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 ​	`srsm`也是采取的三层架构，即：控制层、服务层和数据层，数据层并不是持久化的，而是采用的缓存实现，所以的服务Bean，都是采用**工厂 + 单例**来实现，并且是**懒加载**，保证了Bean的可重用性。
 
+![image](https://github.com/user-attachments/assets/bd23b6ad-b708-4d3a-b975-03c50de47cc2)
+
 ## 三、技术介绍
 
 ### 1. 技术选型
