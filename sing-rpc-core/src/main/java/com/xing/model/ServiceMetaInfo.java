@@ -4,6 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import com.xing.RpcApplication;
 import lombok.Data;
 
+import java.util.Date;
+import java.util.UUID;
+
 @Data
 public class ServiceMetaInfo {
     private String serviceName;
@@ -12,6 +15,8 @@ public class ServiceMetaInfo {
     private Integer servicePort;
     private String serviceGroup = RpcApplication.getRpcConfig().getServiceGroup();
     private String token;
+    private Date registerTime;
+    private String id;
     /**
      * 获取服务键名
      *
@@ -47,5 +52,6 @@ public class ServiceMetaInfo {
         }
         return String.format("%s:%s", serviceHost, servicePort);
     }
+
 
 }

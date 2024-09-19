@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xing.RpcApplication;
 import com.xing.model.ServiceMetaInfo;
 import com.xing.registry.Registry;
-import com.xing.registry.RegistryFactory;
 import lombok.extern.slf4j.Slf4j;
 
 

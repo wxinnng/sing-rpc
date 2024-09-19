@@ -1,19 +1,18 @@
 package com.xing.registry;
 
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
 
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
 import com.xing.exception.EtcdRegistryConnectionException;
 import com.xing.model.ServiceMetaInfo;
-import com.xing.registry.cache.RegistryServiceMultiCache;
 import com.xing.registry.cache.RegistryServiceMultiCacheByCaffeine;
+import com.xing.service.impl.EtcdSystemService;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.kv.PutResponse;
 import io.etcd.jetcd.options.GetOption;
@@ -23,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +43,8 @@ public class EtcdRegistry implements Registry {
     private KV kvClient;
 
 
+
+
     /**
      * 正在监听的 key 集合
      */
@@ -54,10 +56,7 @@ public class EtcdRegistry implements Registry {
     private final RegistryServiceMultiCacheByCaffeine registryServiceCacheByCaffeine = new RegistryServiceMultiCacheByCaffeine(this);
 
 
-    /**
-     * 根节点
-     */
-    private static final String ETCD_ROOT_PATH = "/rpc/";
+
 
     @Override
     public void init(RegistryConfig registryConfig) {
@@ -66,6 +65,12 @@ public class EtcdRegistry implements Registry {
                 .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
                 .build();
         kvClient = client.getKVClient();
+
+        //开启了srsm服务
+        if (RpcApplication.getRpcConfig().getSrsm()){
+            //为注册中心对应的srsm系统服务注册对应远程客户端
+            EtcdSystemService.setClient(kvClient);
+        }
 
         //开启心跳检测方法
         this.heartBeat();
@@ -80,6 +85,12 @@ public class EtcdRegistry implements Registry {
             throw new EtcdRegistryConnectionException();
         }
 
+        //设置注册时间
+        serviceMetaInfo.setRegisterTime(new Date());
+
+        //生成唯一ID
+        serviceMetaInfo.setId(UUID.randomUUID().toString().replace("-",""));
+
         // 创建 Lease 和 KV 客户端
         Lease leaseClient = client.getLeaseClient();
 
@@ -88,7 +99,7 @@ public class EtcdRegistry implements Registry {
 
         // 设置要存储的键值对
         // key :  rpc/service/group/version/ host:port value: serviceInfo
-        String registerKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
+        String registerKey = RegistryKeys.ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
         ByteSequence key = ByteSequence.from(registerKey, StandardCharsets.UTF_8);
         ByteSequence value = ByteSequence.from(JSONUtil.toJsonStr(serviceMetaInfo), StandardCharsets.UTF_8);
 
@@ -119,52 +130,9 @@ public class EtcdRegistry implements Registry {
     @Override
     public void unRegister(ServiceMetaInfo serviceMetaInfo) {
         String serviceNodeKey = serviceMetaInfo.getServiceNodeKey();
-        kvClient.delete(ByteSequence.from(ETCD_ROOT_PATH + serviceNodeKey, StandardCharsets.UTF_8));
+        kvClient.delete(ByteSequence.from(RegistryKeys.ETCD_ROOT_PATH + serviceNodeKey, StandardCharsets.UTF_8));
         localRegistryNodeKeySet.remove(serviceNodeKey);
     }
-
-//    @Override
-//    public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
-//
-//        //优先从缓存中获取服务
-//        List<ServiceMetaInfo> serviceCache = registryServiceCache.readCache(serviceKey);
-//        if(serviceCache != null) {
-//            return serviceCache;
-//        }
-//
-//
-//        // 前缀搜索，结尾一定要加 '/' /rpc/service/group/version/ 下面可能会有多个实例。
-//        String searchPrefix = ETCD_ROOT_PATH + serviceKey + "/";
-//
-//        try {
-//            // 前缀查询
-//            GetOption getOption = GetOption.builder().isPrefix(true).build();
-//            List<KeyValue> keyValues = kvClient.get(
-//                            ByteSequence.from(searchPrefix, StandardCharsets.UTF_8),
-//                            getOption)
-//                    .get()
-//                    .getKvs();
-//            // 解析服务信息
-//            List<ServiceMetaInfo> serviceMetaInfo = keyValues.stream()
-//                    .map(keyValue -> {
-//                        //监听key变化
-//                        String key = keyValue.getKey().toString(StandardCharsets.UTF_8);
-//                        watch(key);
-//
-//                        String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
-//                        return JSONUtil.toBean(value, ServiceMetaInfo.class);
-//                    })
-//                    .collect(Collectors.toList());
-//
-//            //将读取的内容写入缓存
-//            registryServiceCache.writeCache(serviceKey , serviceMetaInfo);
-//            //返回缓存内容
-//            return serviceMetaInfo;
-//
-//        } catch (Exception e) {
-//            throw new RuntimeException("获取服务列表失败", e);
-//        }
-//    }
 
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
@@ -235,7 +203,7 @@ public class EtcdRegistry implements Registry {
         log.info("从etcd中，加载 {} 服务信息",serviceKey);
         //rpc/serviceName/group/version
         // 前缀搜索，结尾一定要加 '/' /rpc/service/group/version/ 下面可能会有多个实例。
-        String searchPrefix = ETCD_ROOT_PATH + serviceKey + "/";
+        String searchPrefix = RegistryKeys.ETCD_ROOT_PATH + serviceKey + "/";
 
         try {
             // 前缀查询
