@@ -9,6 +9,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 
@@ -26,9 +27,19 @@ public class RestfulAPIVerticle extends AbstractVerticle {
         // 创建一个路由器
         Router router = Router.router(vertx);
 
-        // 启用 BodyHandler 以处理请求体
-        router.route().handler(BodyHandler.create());
 
+
+        // 配置 CorsHandler
+        CorsHandler corsHandler = CorsHandler.create("*")
+                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
+                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
+                .allowedMethod(io.vertx.core.http.HttpMethod.PUT)
+                .allowedMethod(io.vertx.core.http.HttpMethod.DELETE)
+                .allowedHeader("Content-Type")
+                .allowedHeader("Authorization")
+                .maxAgeSeconds(3600);
+        // 启用 BodyHandler 以处理请求体
+        router.route().handler(corsHandler);
 
         Iterator entryIterator = ApiCache.getEntryIterator();
         while (entryIterator.hasNext()) {

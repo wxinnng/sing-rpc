@@ -140,7 +140,7 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 ​	请求安全校验就是基于过滤器，流程如图：
 
-![image](https://github.com/user-attachments/assets/4b8513a8-9704-488c-b8b7-dd8b99e0b99d)
+![image](https://github.com/user-attachments/assets/7305a674-fb05-41c5-9f2a-7f54622d61fd)
 
 
 
