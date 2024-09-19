@@ -8,6 +8,7 @@
 
 * **高可用**:基于 `Etcd` 云原生中间件实现了高可用的分布式注册中心，同时采用服务的负载均衡、出错重试、容错机制等，保证了服务的高可用。
 * **高性能**:基于 `Vert.x TCP` 服务器 + 类 `Dubbo` 的紧凑型消息结构（字节数组）自实现了 `RPC `协议，提升网络传输性能。
+* **服务可视化**：基于 `Ts + Vue3`编写的前端页面，后端基于`sing-rpc + vert.x Http + Vert.x部署静态页面` ，一键启动服务可视化功能。
 * **可扩展**:使用工厂模式 + 单例模式简化创建和获取序列化器对象的操作。并通过扫描资源路径 + 反射自实现了 `SPI `机制，用户可通过配置的方式，指定单独的序列化器、注册中心、容错机制、过滤器等。
 * **易操作**:封装了服务提供者和消费者启动类；并开发了基于注解驱动的 Spring Boot Starter，一个注解就能快速注册 Bean 为服务、以及注入服务调用代理对象,同时实现XML和Properties两种配置方式。
 * **安全:**基于过滤器链实现请求的校验，`token`信息由注册中心发放，避免非法请求绕过注册中心，去请求服务。
@@ -155,6 +156,12 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 ​	`srsm`也是采取的三层架构，即：控制层、服务层和数据层，数据层并不是持久化的，而是采用的缓存实现，所以的服务Bean，都是采用**工厂 + 单例**来实现，并且是**懒加载**，保证了Bean的可重用性。
 
 ![image](https://github.com/user-attachments/assets/bd23b6ad-b708-4d3a-b975-03c50de47cc2)
+
+**前端技术**
+
+`Ts + Vue3 + ElementPlus`，通过`Vert.x`进行静态资源的部署，详细设计请看。
+
+[wxinnng/srsm: sing-rpc的服务可视化前端项目 -- 基于 Ts + Vue3 (github.com)](https://github.com/wxinnng/srsm)
 
 ## 三、技术介绍
 
