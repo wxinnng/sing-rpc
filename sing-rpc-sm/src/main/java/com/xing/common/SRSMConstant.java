@@ -8,5 +8,6 @@ public interface SRSMConstant {
     String API_VERSION_CONTROL = "/api/versionControl";
     String API_SERVICE_MANAGEMENT = "/api/serviceManagement";
     String API_DATA_STATISTICS = "/api/dataStatistics";
-
+    String API_LOGIN = "/api/login/:account/:password";
+    String DEFAULT_ACCOUNT = "admin";
 }

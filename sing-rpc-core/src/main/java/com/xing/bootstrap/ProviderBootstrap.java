@@ -38,16 +38,15 @@ public class ProviderBootstrap {
             //放到服务列表中，在后面进行注册
             serviceRegisterInfoList.add(systemServiceServiceRegisterInfo);
         }
+        //注册服务到服务中心
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
         //注册服务
         for(ServiceRegisterInfo<?> serviceRegisterInfo: serviceRegisterInfoList){
             //服务名称
             String serviceName = serviceRegisterInfo.getServiceName();
             //本地注册
             LocalRegistry.register(serviceName,serviceRegisterInfo.getImplClass());
-            //注册服务到服务中心
-            RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
-            //拿到对应的注册中心的实例
-            Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
             //服务信息
             ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
             serviceMetaInfo.setServiceName(serviceName);
@@ -66,7 +65,10 @@ public class ProviderBootstrap {
             //启动服务器
             VertxTcpServer vertxTcpServer = new VertxTcpServer();
             vertxTcpServer.doStart(rpcConfig.getServerPort());
-
         }
+        //注册其他的信息信息
+        registry.registryOtherMessage();
+
+
     }
 }

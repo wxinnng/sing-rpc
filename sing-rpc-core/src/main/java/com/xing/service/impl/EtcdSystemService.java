@@ -6,6 +6,7 @@ import com.xing.constant.RpcConstant;
 import com.xing.model.RemoteServiceInfo;
 import com.xing.model.ServiceManagementInfo;
 import com.xing.model.ServiceMetaInfo;
+import com.xing.model.ServiceStrategyInfo;
 import com.xing.registry.Registry;
 import com.xing.registry.RegistryKeys;
 import com.xing.service.SystemService;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static io.netty.util.ThreadDeathWatcher.watch;
@@ -31,12 +33,10 @@ public class EtcdSystemService implements SystemService {
     }
     @Override
     public List<RemoteServiceInfo> getServiceInfo() {
-        System.err.println("================================================");
         return getServiceInfoFromRemoteRegistry();
     }
     @Override
     public List<ServiceManagementInfo> getServiceManagementInfo() {
-        System.err.println("================================================");
         List<ServiceManagementInfo> result = null;
         List<RemoteServiceInfo> serviceMetaInfo = getServiceInfoFromRemoteRegistry();
 
@@ -63,17 +63,37 @@ public class EtcdSystemService implements SystemService {
         return result;
     }
 
-    private List<RemoteServiceInfo> getServiceInfoFromRemoteRegistry(){
-        System.err.println("+++++++++++++++++++++++++++++++++++++++++++serviceManager+++++++++++++++++++++++++++++++++++++++++++++");
-        List<RemoteServiceInfo> serviceMetaInfo = null;
-        // 前缀查询
-        try{
-            GetOption getOption = GetOption.builder().isPrefix(true).build();
+    @Override
+    public List<ServiceStrategyInfo> getServiceStrategyInfo() {
+        List<KeyValue> keyValues = doSearchByKey(RegistryKeys.SRSM_ROOT_PATH);
+        return keyValues.stream()
+                .map(keyValue -> {
+                    String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
+                    return JSONUtil.toBean(value, ServiceStrategyInfo.class);
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    private List<KeyValue> doSearchByKey(String key){
+        GetOption getOption = GetOption.builder().isPrefix(true).build();
+        try {
             List<KeyValue> keyValues = kvClient.get(
-                            ByteSequence.from(RegistryKeys.ETCD_ROOT_PATH, StandardCharsets.UTF_8),
+                            ByteSequence.from(key, StandardCharsets.UTF_8),
                             getOption)
                     .get()
                     .getKvs();
+            return keyValues;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<RemoteServiceInfo> getServiceInfoFromRemoteRegistry(){
+        List<RemoteServiceInfo> serviceMetaInfo = null;
+        // 前缀查询
+        try{
+            List<KeyValue> keyValues = doSearchByKey(RegistryKeys.ETCD_ROOT_PATH);
             // 解析服务信息
             serviceMetaInfo = keyValues.stream()
                     .map(keyValue -> {

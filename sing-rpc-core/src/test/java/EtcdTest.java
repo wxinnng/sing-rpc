@@ -1,6 +1,8 @@
 import cn.hutool.json.JSONUtil;
 import com.xing.constant.RpcConstant;
 import com.xing.model.RemoteServiceInfo;
+import com.xing.model.ServiceStrategyInfo;
+import com.xing.registry.RegistryKeys;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;
@@ -23,8 +25,8 @@ public class EtcdTest {
                 .connectTimeout(Duration.ofMillis(1000))
                 .build().getKVClient();
 
-        List<RemoteServiceInfo> serviceMetaInfo = null;
-        String searchPrefix ="/rpc/";
+        List<ServiceStrategyInfo> serviceMetaInfo = null;
+        String searchPrefix = RegistryKeys.SRSM_ROOT_PATH;
         // 前缀查询
 //        try{
             GetOption getOption = GetOption.builder().isPrefix(true).build();
@@ -37,7 +39,7 @@ public class EtcdTest {
             serviceMetaInfo = keyValues.stream()
                     .map(keyValue -> {
                         String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
-                        return JSONUtil.toBean(value, RemoteServiceInfo.class);
+                        return JSONUtil.toBean(value, ServiceStrategyInfo.class);
                     })
                     .collect(Collectors.toList());
 //        }catch (Exception e){

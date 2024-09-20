@@ -17,11 +17,6 @@ public class SRSMBootstrap {
                 "                            \n"
                 );
 
-        //类加载器
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-
-
         //服务初始化
         ConsumerBootstrap.init();
 

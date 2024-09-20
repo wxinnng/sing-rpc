@@ -1,5 +1,6 @@
 package com.xing.registry;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.core.lang.UUID;
@@ -9,8 +10,10 @@ import cn.hutool.json.JSONUtil;
 
 import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
+import com.xing.config.RpcConfig;
 import com.xing.exception.EtcdRegistryConnectionException;
 import com.xing.model.ServiceMetaInfo;
+import com.xing.model.ServiceStrategyInfo;
 import com.xing.registry.cache.RegistryServiceMultiCacheByCaffeine;
 import com.xing.service.impl.EtcdSystemService;
 import io.etcd.jetcd.*;
@@ -41,8 +44,6 @@ public class EtcdRegistry implements Registry {
     private Client client;
 
     private KV kvClient;
-
-
 
 
     /**
@@ -151,6 +152,14 @@ public class EtcdRegistry implements Registry {
                 throw new RuntimeException(e);
             }
         }
+        //删除其他注册信息
+        try{
+            RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            kvClient.delete(ByteSequence.from(RegistryKeys.SRSM_ROOT_PATH+"strategy/" + rpcConfig.getServerHost() , StandardCharsets.UTF_8)).get();
+            System.err.println("wangweangnkdlfjkekkkkkkk");
+        }catch (Exception e){
+            log.error("删除其他注册信息失败",e);
+        }
 
 
         // 释放资源
@@ -256,6 +265,32 @@ public class EtcdRegistry implements Registry {
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void registryOtherMessage() {
+
+        // 服务信息
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+
+        //在这个方法里注册有关可视化的信息
+        String root = RegistryKeys.SRSM_ROOT_PATH;
+        ServiceStrategyInfo serviceStrategyInfo = new ServiceStrategyInfo();
+        serviceStrategyInfo.setHost(rpcConfig.getServerHost());
+        serviceStrategyInfo.setRetryStrategy(rpcConfig.getRetryStrategy());
+        serviceStrategyInfo.setTolerantStrategy(rpcConfig.getTolerantStrategy());
+        serviceStrategyInfo.setLoadBalancer(rpcConfig.getLoadBalancer());
+        serviceStrategyInfo.setMock(rpcConfig.isMock());
+        serviceStrategyInfo.setSerializer(rpcConfig.getSerializer());
+
+        ByteSequence key = ByteSequence.from(root + "strategy/" + rpcConfig.getServerHost() , StandardCharsets.UTF_8);
+        ByteSequence value = ByteSequence.from(JSONUtil.toJsonStr(serviceStrategyInfo), StandardCharsets.UTF_8);
+
+        try {
+            PutResponse putResponse = kvClient.put(key, value).get();
+        } catch (Exception e) {
+            throw new RuntimeException("服务注册失败");
         }
     }
 }

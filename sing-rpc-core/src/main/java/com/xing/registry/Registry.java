@@ -60,4 +60,5 @@ public interface Registry {
      */
     void watch(String serviceNodeKey);
 
+    void registryOtherMessage();
 }
