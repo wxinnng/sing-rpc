@@ -6,6 +6,7 @@ public interface SRSMConstant {
     String API_SERVICE_GROUP = "/api/serviceGroup";
     String API_SERVICE_STRATEGY = "/api/serviceStrategy";
     String API_VERSION_CONTROL = "/api/versionControl";
+    String API_SERVICE_MANAGEMENT = "/api/serviceManagement";
     String API_DATA_STATISTICS = "/api/dataStatistics";
 
 }

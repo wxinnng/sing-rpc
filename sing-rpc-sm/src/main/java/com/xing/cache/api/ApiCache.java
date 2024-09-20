@@ -21,6 +21,7 @@ public class ApiCache {
         ApiCache.addApi(SRSMConstant.API_SERVICE_GROUP,new ServiceGroupController());
         ApiCache.addApi(SRSMConstant.API_VERSION_CONTROL,new VersionControlController());
         ApiCache.addApi(SRSMConstant.API_DATA_STATISTICS,new DataStatisticsController());
+        ApiCache.addApi(SRSMConstant.API_SERVICE_MANAGEMENT,new ServiceManagementController());
     }
 
     //添加缓存

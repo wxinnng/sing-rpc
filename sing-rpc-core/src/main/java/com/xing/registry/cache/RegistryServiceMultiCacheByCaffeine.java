@@ -58,7 +58,6 @@ public class RegistryServiceMultiCacheByCaffeine {
     public List<ServiceMetaInfo> readCache(String serviceKey) {
         //service -> group & version -> service list
         return serviceCache.get(serviceKey);
-
     }
 
     /**

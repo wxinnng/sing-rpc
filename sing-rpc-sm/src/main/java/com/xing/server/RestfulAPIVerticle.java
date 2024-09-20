@@ -12,8 +12,6 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
-
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -23,12 +21,8 @@ public class RestfulAPIVerticle extends AbstractVerticle {
     public void start() {
         // 创建一个 HTTP 服务器
         HttpServer server = vertx.createHttpServer();
-
         // 创建一个路由器
         Router router = Router.router(vertx);
-
-
-
         // 配置 CorsHandler
         CorsHandler corsHandler = CorsHandler.create("*")
                 .allowedMethod(io.vertx.core.http.HttpMethod.GET)
