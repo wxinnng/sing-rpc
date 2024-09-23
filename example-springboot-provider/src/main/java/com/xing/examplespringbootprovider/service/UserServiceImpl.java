@@ -2,11 +2,11 @@ package com.xing.examplespringbootprovider.service;
 
 import com.xing.model.User;
 import com.xing.service.UserService;
-import com.xing.singrpcspringbootstarter.annotation.RpcService;
+import com.xing.singrpcspringbootstarter.annotation.SingRpcService;
 import org.springframework.stereotype.Service;
 
 @Service
-@RpcService
+@SingRpcService
 public class UserServiceImpl implements UserService {
     @Override
     public User getUser(User user) {
