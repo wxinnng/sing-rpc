@@ -1,0 +1,8 @@
+rpc:
+  serverPort: 9039
+  serializer: json
+  name: wangxing
+  identify: true
+  version: 2.1
+  serviceGroup: beijing
+  srsm: true

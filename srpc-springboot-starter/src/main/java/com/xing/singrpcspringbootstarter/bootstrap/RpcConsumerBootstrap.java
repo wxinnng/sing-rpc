@@ -1,7 +1,10 @@
 package com.xing.singrpcspringbootstarter.bootstrap;
 
-import com.xing.proxy.ServiceProxy;
+
+import com.xing.model.ServiceRegisterInfo;
 import com.xing.proxy.ServiceProxyFactory;
+import com.xing.service.SystemService;
+import com.xing.service.SystemServiceFactory;
 import com.xing.singrpcspringbootstarter.annotation.RpcReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -24,6 +27,7 @@ public class RpcConsumerBootstrap implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
         Class<?> beanClass = bean.getClass();
+
         //遍历对象所有的属性
         Field[] declaredFields = beanClass.getDeclaredFields();
         for (Field field : declaredFields) {

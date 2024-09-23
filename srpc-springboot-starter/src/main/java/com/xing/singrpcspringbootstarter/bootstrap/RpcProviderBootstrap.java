@@ -5,9 +5,12 @@ import com.xing.RpcApplication;
 import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
 import com.xing.model.ServiceMetaInfo;
+import com.xing.model.ServiceRegisterInfo;
 import com.xing.registry.LocalRegistry;
 import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
+import com.xing.service.SystemService;
+import com.xing.service.SystemServiceFactory;
 import com.xing.singrpcspringbootstarter.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -49,6 +52,8 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
 
             //全局配置
             final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+
+
             //注册服务到注册中心
             RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
             Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
@@ -57,7 +62,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             serviceMetaInfo.setServiceVersion(serviceVersion);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-
+            serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
             String token = RpcApplication.getRpcConfig().getToken();
             serviceMetaInfo.setToken(token);
 

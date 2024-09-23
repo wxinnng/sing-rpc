@@ -28,7 +28,6 @@ public class ProviderBootstrap {
         //判断是否需要注册系统服务
         if(rpcConfig.getSrsm()){
             log.info("加载srsm相关的系统服务");
-
             //拿到系统服务实现类的class类
             Class<? extends SystemService> aclass = SystemServiceFactory.getInstanceClass(rpcConfig.getRegistryConfig().getRegistry());
             //封装一个服务

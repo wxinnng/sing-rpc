@@ -156,7 +156,6 @@ public class EtcdRegistry implements Registry {
         try{
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
             kvClient.delete(ByteSequence.from(RegistryKeys.SRSM_ROOT_PATH+"strategy/" + rpcConfig.getServerHost() , StandardCharsets.UTF_8)).get();
-            System.err.println("wangweangnkdlfjkekkkkkkk");
         }catch (Exception e){
             log.error("删除其他注册信息失败",e);
         }
