@@ -56,7 +56,7 @@ public class ServiceProxy implements InvocationHandler {
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
         //设置服务信息
         serviceMetaInfo.setServiceVersion(this.discoverParams.getVersion());
-        //TODO:其他的信息，如分组，mock这些
+        //TODO:其他的信息，如分组
         serviceMetaInfo.setServiceName(serviceName);
         log.info("服务发现: {}",serviceMetaInfo);
         //进行服务发现

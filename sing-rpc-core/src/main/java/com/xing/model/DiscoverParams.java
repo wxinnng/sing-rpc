@@ -7,4 +7,5 @@ import lombok.Data;
 public class DiscoverParams {
     private String version = RpcApplication.getRpcConfig().getVersion();
     private String group = RpcApplication.getRpcConfig().getServiceGroup();
+    private Boolean mock = false;
 }

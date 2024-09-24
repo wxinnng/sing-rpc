@@ -8,12 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ExampleServiceImpl {
-    @SingRpcReference(version = "4.1.0")
+
+    @SingRpcReference(version = "4.1.0",mock = true)
     private UserService userService;
     public void test(){
         User user = new User();
         user.setName("吕圣伟");
         user = userService.getUser(user);
-        System.out.println(user.getName());
+        System.out.println("name is " + user.getName());
     }
 }

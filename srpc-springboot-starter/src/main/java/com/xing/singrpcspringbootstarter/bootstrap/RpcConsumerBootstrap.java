@@ -46,6 +46,7 @@ public class RpcConsumerBootstrap implements BeanPostProcessor {
                 //封装服务发现的参数
                 DiscoverParams discoverParams = new DiscoverParams();
                 discoverParams.setVersion(rpcReference.version());
+                discoverParams.setMock(rpcReference.mock());
 
                 Object proxyObject = ServiceProxyFactory.getProxy(interfaceClass,discoverParams);
                 try {
