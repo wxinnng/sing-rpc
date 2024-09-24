@@ -66,7 +66,10 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             serviceMetaInfo.setToken(token);
 
             try {
+
+                //注册用户服务
                 registry.register(serviceMetaInfo);
+
                 log.info("服务注册成功");
             } catch (Exception e) {
                 log.error("注册服务失败",e);

@@ -13,8 +13,11 @@ import com.xing.config.RegistryConfig;
 import com.xing.config.RpcConfig;
 import com.xing.exception.EtcdRegistryConnectionException;
 import com.xing.model.ServiceMetaInfo;
+import com.xing.model.ServiceRegisterInfo;
 import com.xing.model.ServiceStrategyInfo;
 import com.xing.registry.cache.RegistryServiceMultiCacheByCaffeine;
+import com.xing.service.SystemService;
+import com.xing.service.SystemServiceFactory;
 import com.xing.service.impl.EtcdSystemService;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.kv.PutResponse;
@@ -269,11 +272,32 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void registryOtherMessage() {
-
-        // 服务信息
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-
         //在这个方法里注册有关可视化的信息
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        if(!rpcConfig.getSrsm())
+            return;
+        log.info("加载srsm相关的系统服务.");
+
+        //拿到系统服务实现类的class类
+        Class<? extends SystemService> aclass = SystemServiceFactory.getInstanceClass(rpcConfig.getRegistryConfig().getRegistry());
+
+
+        //服务信息
+        ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+        serviceMetaInfo.setServiceName(SystemService.class.getName());
+        serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
+        serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+        serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
+
+        //服务的token
+        String token = RpcApplication.getRpcConfig().getToken();
+        serviceMetaInfo.setToken(token);
+
+
+        //本地注册
+        LocalRegistry.register(serviceMetaInfo.getServiceName(),aclass);
+
+        //strategy 相关的服务
         String root = RegistryKeys.SRSM_ROOT_PATH;
         ServiceStrategyInfo serviceStrategyInfo = new ServiceStrategyInfo();
         serviceStrategyInfo.setHost(rpcConfig.getServerHost());
@@ -282,12 +306,12 @@ public class EtcdRegistry implements Registry {
         serviceStrategyInfo.setLoadBalancer(rpcConfig.getLoadBalancer());
         serviceStrategyInfo.setMock(rpcConfig.isMock());
         serviceStrategyInfo.setSerializer(rpcConfig.getSerializer());
-
         ByteSequence key = ByteSequence.from(root + "strategy/" + rpcConfig.getServerHost() , StandardCharsets.UTF_8);
         ByteSequence value = ByteSequence.from(JSONUtil.toJsonStr(serviceStrategyInfo), StandardCharsets.UTF_8);
 
         try {
-            PutResponse putResponse = kvClient.put(key, value).get();
+            kvClient.put(key, value).get();
+            this.register(serviceMetaInfo);
         } catch (Exception e) {
             throw new RuntimeException("服务注册失败");
         }

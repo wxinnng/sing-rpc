@@ -25,9 +25,7 @@ import static io.netty.util.ThreadDeathWatcher.watch;
 @Slf4j
 public class EtcdSystemService implements SystemService {
 
-
     private static KV kvClient;
-
     public static void setClient(KV client){
         EtcdSystemService.kvClient = client;
     }

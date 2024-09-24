@@ -34,38 +34,9 @@ public class RpcInitBootstrap implements ImportBeanDefinitionRegistrar {
         //全局配置
         final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
 
-
-        if(rpcConfig.getSrsm()){
-            log.info("加载srsm相关的系统服务");
-            //拿到系统服务实现类的class类
-            Class<? extends SystemService> aclass = SystemServiceFactory.getInstanceClass(rpcConfig.getRegistryConfig().getRegistry());
-            //封装一个服务
-            ServiceRegisterInfo<SystemService> systemServiceServiceRegisterInfo = new ServiceRegisterInfo<>();
-            systemServiceServiceRegisterInfo.setServiceName(SystemService.class.getName());
-            systemServiceServiceRegisterInfo.setImplClass(aclass);
-
-            String serviceName = systemServiceServiceRegisterInfo.getServiceName();
-            //本地注册
-            LocalRegistry.register(serviceName,systemServiceServiceRegisterInfo.getImplClass());
-
-            ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
-            serviceMetaInfo.setServiceName(serviceName);
-            serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
-            serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-            serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
-            //服务的token
-            String token = RpcApplication.getRpcConfig().getToken();
-            serviceMetaInfo.setToken(token);
-
-            //放到服务列表中，在后面进行注册
-            Registry remoteRegistry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
-
-            try{
-                remoteRegistry.register(serviceMetaInfo);
-            }catch (Exception e){
-                throw new RuntimeException("服务注册失败！",e);
-            }
-        }
+        //拿到远程注册中心，注册与系统相关的服务
+        Registry remoteRegistry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
+        remoteRegistry.registryOtherMessage();
 
         //启动服务器
         if(needServer){

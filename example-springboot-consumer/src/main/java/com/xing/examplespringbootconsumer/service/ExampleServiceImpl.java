@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ExampleServiceImpl {
-    @SingRpcReference(version = "4.1.1")
+    @SingRpcReference(version = "4.1.0")
     private UserService userService;
     public void test(){
         User user = new User();

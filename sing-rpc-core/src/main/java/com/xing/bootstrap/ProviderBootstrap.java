@@ -25,18 +25,6 @@ public class ProviderBootstrap {
         RpcApplication.init();
         //全局配置
         final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-        //判断是否需要注册系统服务
-        if(rpcConfig.getSrsm()){
-            log.info("加载srsm相关的系统服务");
-            //拿到系统服务实现类的class类
-            Class<? extends SystemService> aclass = SystemServiceFactory.getInstanceClass(rpcConfig.getRegistryConfig().getRegistry());
-            //封装一个服务
-            ServiceRegisterInfo<SystemService> systemServiceServiceRegisterInfo = new ServiceRegisterInfo<>();
-            systemServiceServiceRegisterInfo.setServiceName(SystemService.class.getName());
-            systemServiceServiceRegisterInfo.setImplClass(aclass);
-            //放到服务列表中，在后面进行注册
-            serviceRegisterInfoList.add(systemServiceServiceRegisterInfo);
-        }
         //注册服务到服务中心
         RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
         Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
@@ -51,6 +39,7 @@ public class ProviderBootstrap {
             serviceMetaInfo.setServiceName(serviceName);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+            serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
             //服务的token
             String token = RpcApplication.getRpcConfig().getToken();
             serviceMetaInfo.setToken(token);
@@ -60,14 +49,11 @@ public class ProviderBootstrap {
             }catch (Exception e){
                 throw new RuntimeException("服务注册失败！",e);
             }
-
             //启动服务器
             VertxTcpServer vertxTcpServer = new VertxTcpServer();
             vertxTcpServer.doStart(rpcConfig.getServerPort());
         }
         //注册其他的信息信息
         registry.registryOtherMessage();
-
-
     }
 }
