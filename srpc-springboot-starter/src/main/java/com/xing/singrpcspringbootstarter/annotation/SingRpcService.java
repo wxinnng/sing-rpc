@@ -19,6 +19,6 @@ public @interface SingRpcService {
      */
     Class<?> interfaceClass() default void.class;
 
-    String serviceVersion() default RpcConstant.DEFAULT_SERVICE_VERSION;
+    String version() default RpcConstant.DEFAULT_SERVICE_VERSION;
 
 }

@@ -1,11 +1,13 @@
 package com.xing.singrpcspringbootstarter.bootstrap;
 
 
+import com.xing.RpcApplication;
+import com.xing.model.DiscoverParams;
 import com.xing.model.ServiceRegisterInfo;
 import com.xing.proxy.ServiceProxyFactory;
 import com.xing.service.SystemService;
 import com.xing.service.SystemServiceFactory;
-import com.xing.singrpcspringbootstarter.annotation.RpcReference;
+import com.xing.singrpcspringbootstarter.annotation.SingRpcReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -31,7 +33,8 @@ public class RpcConsumerBootstrap implements BeanPostProcessor {
         //遍历对象所有的属性
         Field[] declaredFields = beanClass.getDeclaredFields();
         for (Field field : declaredFields) {
-            RpcReference rpcReference = field.getAnnotation(RpcReference.class);
+            SingRpcReference rpcReference = field.getAnnotation(SingRpcReference.class);
+
             if(rpcReference != null){
                 //为属性生成代理对象
                 Class<?> interfaceClass = rpcReference.interfaceClass();
@@ -39,7 +42,12 @@ public class RpcConsumerBootstrap implements BeanPostProcessor {
                     interfaceClass = field.getType();
                 }
                 field.setAccessible(true);
-                Object proxyObject = ServiceProxyFactory.getProxy(interfaceClass);
+
+                //封装服务发现的参数
+                DiscoverParams discoverParams = new DiscoverParams();
+                discoverParams.setVersion(rpcReference.version());
+
+                Object proxyObject = ServiceProxyFactory.getProxy(interfaceClass,discoverParams);
                 try {
                     field.set(bean,proxyObject);
                     field.setAccessible(true);

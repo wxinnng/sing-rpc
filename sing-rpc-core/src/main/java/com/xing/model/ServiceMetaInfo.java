@@ -2,15 +2,15 @@ package com.xing.model;
 
 import cn.hutool.core.util.StrUtil;
 import com.xing.RpcApplication;
+import com.xing.registry.RegistryKeys;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Data
 public class ServiceMetaInfo {
     private String serviceName;
-    private String serviceVersion = RpcApplication.getRpcConfig().getVersion();
+    private String serviceVersion;
     private String serviceHost;
     private Integer servicePort;
     private String serviceGroup = RpcApplication.getRpcConfig().getServiceGroup();

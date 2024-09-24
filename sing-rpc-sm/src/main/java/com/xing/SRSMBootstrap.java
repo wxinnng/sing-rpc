@@ -1,7 +1,6 @@
 package com.xing;
 
 import com.xing.bootstrap.ConsumerBootstrap;
-import com.xing.cache.api.ApiCache;
 import com.xing.server.RestfulAPIVerticle;
 import io.vertx.core.Vertx;
 

@@ -27,7 +27,7 @@ public @interface SingRpcReference {
     /**
      * 版本
      */
-    String serviceVersion() default RpcConstant.DEFAULT_SERVICE_VERSION;
+    String version() default RpcConstant.DEFAULT_SERVICE_VERSION;
 
     /**
      * 负载均衡器

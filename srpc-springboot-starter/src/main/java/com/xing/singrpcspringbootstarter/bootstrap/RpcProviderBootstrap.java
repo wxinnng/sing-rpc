@@ -11,7 +11,7 @@ import com.xing.registry.Registry;
 import com.xing.registry.RegistryFactory;
 import com.xing.service.SystemService;
 import com.xing.service.SystemServiceFactory;
-import com.xing.singrpcspringbootstarter.annotation.RpcService;
+import com.xing.singrpcspringbootstarter.annotation.SingRpcService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -33,7 +33,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanClass = bean.getClass();
-        RpcService rpcService = beanClass.getAnnotation(RpcService.class);
+        SingRpcService rpcService = beanClass.getAnnotation(SingRpcService.class);
         if (rpcService != null) {
             //需要注册服务
             //1.获取服务的基本信息
@@ -44,8 +44,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             }
             //服务名称
             String serviceName = interfaceClass.getName();
-            String serviceVersion = rpcService.serviceVersion();
-
+            String serviceVersion = rpcService.version();
             //2.注册服务
             //本地注册
             LocalRegistry.register(serviceName,beanClass);
@@ -62,7 +61,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             serviceMetaInfo.setServiceVersion(serviceVersion);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
-            serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
+            serviceMetaInfo.setServiceVersion(serviceVersion == null ? rpcService.version() : serviceVersion);
             String token = RpcApplication.getRpcConfig().getToken();
             serviceMetaInfo.setToken(token);
 

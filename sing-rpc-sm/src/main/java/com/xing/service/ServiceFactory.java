@@ -33,7 +33,7 @@ public class ServiceFactory {
                     return (T) serviceMap.get(clazz);
                 }else{
                     //通过sing-rpc的服务工厂，获得实例，放到map中
-                    serviceMap.put(clazz,ServiceProxyFactory.getProxy(clazz));
+                    serviceMap.put(clazz,ServiceProxyFactory.getProxy(clazz,null));
                 }
             }
         }

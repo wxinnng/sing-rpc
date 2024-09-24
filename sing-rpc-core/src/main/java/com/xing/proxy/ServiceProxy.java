@@ -10,6 +10,7 @@ import com.xing.fault.tolerant.TolerantStrategyFactory;
 import com.xing.filter.ConsumerFilterChain;
 import com.xing.loadbalancer.LoadBalancer;
 import com.xing.loadbalancer.LoadBalancerFactory;
+import com.xing.model.DiscoverParams;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
 import com.xing.model.ServiceMetaInfo;
@@ -30,6 +31,12 @@ import java.util.Map;
 @Slf4j
 public class ServiceProxy implements InvocationHandler {
 
+    private DiscoverParams discoverParams;
+
+    public ServiceProxy(DiscoverParams discoverParams){
+        this.discoverParams = discoverParams;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
@@ -47,11 +54,16 @@ public class ServiceProxy implements InvocationHandler {
         //获得对应的注册中心的注册信息
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+        //设置服务信息
+        serviceMetaInfo.setServiceVersion(this.discoverParams.getVersion());
+        //TODO:其他的信息，如分组，mock这些
         serviceMetaInfo.setServiceName(serviceName);
+        log.info("服务发现: {}",serviceMetaInfo);
+        //进行服务发现
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
 
         if(CollUtil.isEmpty(serviceMetaInfos)){
-            throw new RuntimeException("没有此服务！");
+            throw new RuntimeException("没有此服务！" + serviceMetaInfo);
         }
 
         //拿到配置的负载均衡器
@@ -65,6 +77,7 @@ public class ServiceProxy implements InvocationHandler {
         //填上对应的token(这个是要解决服务提供端的token校验的步骤，和消费端的过滤器没有关系)。
         rpcRequest.setToken(selectedServiceMetaInfo.getToken());
 
+        //调用过滤器链
         ConsumerFilterChain consumerFilterChain = new ConsumerFilterChain();
         consumerFilterChain.doFilter(rpcRequest,null);
 
@@ -76,7 +89,6 @@ public class ServiceProxy implements InvocationHandler {
             //重试机制
             RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
             rpcResponse = retryStrategy.doRetry(() ->
-                //lambda : 如果只有一行，就是返回的数据，甚至分号都不用加
                 VertxTcpClient.doRequest(rpcRequest, selectedServiceMetaInfo)
             );
 

@@ -15,7 +15,7 @@ public class EasyConsumerExample {
 
         RpcApplication.init();
 
-        UserService userService = ServiceProxyFactory.getProxy(UserService.class);
+        UserService userService = ServiceProxyFactory.getProxy(UserService.class,null);
 
         User user = new User();
         user.setName("xing");

@@ -13,7 +13,7 @@ public class ConsumerExample2 {
         ConsumerBootstrap.init();
 
         //获取代理
-        UserService userService = ServiceProxyFactory.getProxy(UserService.class);
+        UserService userService = ServiceProxyFactory.getProxy(UserService.class,null);
         User user = new User();
         user.setName("wangxing");
         User newUser = userService.getUser(user);

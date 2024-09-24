@@ -10,7 +10,7 @@ import com.xing.registry.RegistryFactory;
 import com.xing.server.tcp.VertxTcpServer;
 import com.xing.service.SystemService;
 import com.xing.service.SystemServiceFactory;
-import com.xing.singrpcspringbootstarter.annotation.EnableRpc;
+import com.xing.singrpcspringbootstarter.annotation.EnableSingRpc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -26,7 +26,7 @@ public class RpcInitBootstrap implements ImportBeanDefinitionRegistrar {
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
         //获取EnableRpc注解属性
-        Boolean needServer = (Boolean) importingClassMetadata.getAnnotationAttributes(EnableRpc.class.getName()).get("needServer");
+        Boolean needServer = (Boolean) importingClassMetadata.getAnnotationAttributes(EnableSingRpc.class.getName()).get("needServer");
 
         //RPC初始化
         RpcApplication.init();
@@ -52,6 +52,7 @@ public class RpcInitBootstrap implements ImportBeanDefinitionRegistrar {
             serviceMetaInfo.setServiceName(serviceName);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+            serviceMetaInfo.setServiceVersion(rpcConfig.getVersion());
             //服务的token
             String token = RpcApplication.getRpcConfig().getToken();
             serviceMetaInfo.setToken(token);

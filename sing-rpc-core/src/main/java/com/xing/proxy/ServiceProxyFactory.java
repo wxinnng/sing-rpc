@@ -1,6 +1,7 @@
 package com.xing.proxy;
 
 import com.xing.RpcApplication;
+import com.xing.model.DiscoverParams;
 
 import java.lang.reflect.Proxy;
 
@@ -14,11 +15,20 @@ public class ServiceProxyFactory {
      * @return
      * @param <T>
      */
-    public static <T> T getProxy(Class<T> tClass){
+    public static <T> T getProxy(Class<T> tClass, DiscoverParams discoverParams){
+
+        //开启了mock测试直接返回mock对象就好。
         if(RpcApplication.getRpcConfig().isMock()){
             return getMockProxy(tClass);
         }
-        return (T) Proxy.newProxyInstance(tClass.getClassLoader(),new Class[]{tClass}, new ServiceProxy());
+
+        //如果放的是null，就使用默认值,这里主要针对的是不使用starter的情况，版本信息需要通过配置文件来弄
+        if(discoverParams == null){
+            discoverParams = new DiscoverParams();
+        }
+
+        //返回代理对象。
+        return (T) Proxy.newProxyInstance(tClass.getClassLoader(),new Class[]{tClass}, new ServiceProxy(discoverParams));
     }
 
 

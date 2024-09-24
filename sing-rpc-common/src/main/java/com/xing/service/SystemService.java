@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface SystemService {
     List<RemoteServiceInfo> getServiceInfo();
+
     List<ServiceManagementInfo> getServiceManagementInfo();
+
     List<ServiceStrategyInfo> getServiceStrategyInfo();
 }

@@ -6,7 +6,7 @@ import com.xing.singrpcspringbootstarter.annotation.SingRpcService;
 import org.springframework.stereotype.Service;
 
 @Service
-@SingRpcService
+@SingRpcService(version = "4.1.0")
 public class UserServiceImpl implements UserService {
     @Override
     public User getUser(User user) {
