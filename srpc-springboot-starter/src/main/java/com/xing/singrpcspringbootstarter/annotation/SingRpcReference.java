@@ -29,6 +29,8 @@ public @interface SingRpcReference {
      */
     String version() default RpcConstant.DEFAULT_SERVICE_VERSION;
 
+    String group() default RpcConstant.DEFAULT_GROUP;
+
     /**
      * 负载均衡器
      */

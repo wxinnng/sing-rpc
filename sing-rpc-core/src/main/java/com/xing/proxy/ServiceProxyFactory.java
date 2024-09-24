@@ -23,7 +23,8 @@ public class ServiceProxyFactory {
         }
 
         //开启了mock测试直接返回mock对象就好,这里是兼容非starter模式下
-        if(RpcApplication.getRpcConfig().isMock() || discoverParams.getMock()){
+        //局部的配置的优先级要高于全局配置
+        if(discoverParams.getMock() || RpcApplication.getRpcConfig().isMock() ){
             return getMockProxy(tClass);
         }
 

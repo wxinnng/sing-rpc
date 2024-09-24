@@ -51,14 +51,18 @@ public class ServiceProxy implements InvocationHandler {
 
         //动态获取所有注册的服务
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+
         //获得对应的注册中心的注册信息
         Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
         ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+
         //设置服务信息
         serviceMetaInfo.setServiceVersion(this.discoverParams.getVersion());
-        //TODO:其他的信息，如分组
+        serviceMetaInfo.setServiceGroup(this.discoverParams.getGroup());
         serviceMetaInfo.setServiceName(serviceName);
+
         log.info("服务发现: {}",serviceMetaInfo);
+
         //进行服务发现
         List<ServiceMetaInfo> serviceMetaInfos = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
 

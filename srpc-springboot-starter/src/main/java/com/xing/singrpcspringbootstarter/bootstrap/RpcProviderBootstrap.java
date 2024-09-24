@@ -61,6 +61,7 @@ public class RpcProviderBootstrap implements BeanPostProcessor {
             serviceMetaInfo.setServiceVersion(serviceVersion);
             serviceMetaInfo.setServiceHost(rpcConfig.getServerHost());
             serviceMetaInfo.setServicePort(rpcConfig.getServerPort());
+            serviceMetaInfo.setServiceGroup(rpcService.group());
             serviceMetaInfo.setServiceVersion(serviceVersion == null ? rpcService.version() : serviceVersion);
             String token = RpcApplication.getRpcConfig().getToken();
             serviceMetaInfo.setToken(token);

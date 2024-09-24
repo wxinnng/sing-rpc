@@ -2,6 +2,7 @@ package com.xing.singrpcspringbootstarter.bootstrap;
 
 
 import com.xing.RpcApplication;
+import com.xing.constant.RpcConstant;
 import com.xing.model.DiscoverParams;
 import com.xing.model.ServiceRegisterInfo;
 import com.xing.proxy.ServiceProxyFactory;
@@ -47,6 +48,12 @@ public class RpcConsumerBootstrap implements BeanPostProcessor {
                 DiscoverParams discoverParams = new DiscoverParams();
                 discoverParams.setVersion(rpcReference.version());
                 discoverParams.setMock(rpcReference.mock());
+                if(rpcReference.group().equals(RpcConstant.DEFAULT_GROUP)){
+                    //那么就是用配置文件系统的分组配置
+                    discoverParams.setGroup(RpcApplication.getRpcConfig().getServiceGroup());
+                }else{
+                    discoverParams.setGroup(rpcReference.group());
+                }
 
                 Object proxyObject = ServiceProxyFactory.getProxy(interfaceClass,discoverParams);
                 try {

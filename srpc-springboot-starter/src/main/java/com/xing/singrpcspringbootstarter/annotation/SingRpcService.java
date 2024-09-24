@@ -19,6 +19,16 @@ public @interface SingRpcService {
      */
     Class<?> interfaceClass() default void.class;
 
+    /**
+     * 版本
+     * @return
+     */
     String version() default RpcConstant.DEFAULT_SERVICE_VERSION;
+
+    /**
+     * 服务分组
+     * @return
+     */
+    String group() default RpcConstant.DEFAULT_GROUP;
 
 }
