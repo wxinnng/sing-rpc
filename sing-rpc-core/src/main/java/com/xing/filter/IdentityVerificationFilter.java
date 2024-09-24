@@ -14,7 +14,7 @@ public class IdentityVerificationFilter implements ProviderFilter{
     @Override
     public void doFilter(RpcRequest rpcRequest, RpcResponse response, FilterChain filterChain) throws RuntimeException {
 
-        if(! RpcApplication.getRpcConfig().getIdentify()){
+        if(!RpcApplication.getRpcConfig().getIdentify()){
             log.info("未开启身份验证");
         }else if(rpcRequest.getToken() == null) {
             log.error("token为空，拒绝请求！");

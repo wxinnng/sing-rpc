@@ -13,5 +13,7 @@ public interface RpcConstant {
 
     String AUTHENTICATION_FAIL = "身份验证失败！";
 
+    String REQUEST_LIMIT = "请求限流";
+
     String DEFAULT_GROUP = "default";
 }

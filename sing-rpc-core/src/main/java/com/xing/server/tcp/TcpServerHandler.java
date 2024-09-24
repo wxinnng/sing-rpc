@@ -1,6 +1,7 @@
 package com.xing.server.tcp;
 
 
+import com.xing.exception.RequestRejectException;
 import com.xing.filter.ProviderFilterChain;
 import com.xing.model.RpcRequest;
 import com.xing.model.RpcResponse;
@@ -40,6 +41,11 @@ public class TcpServerHandler implements Handler<NetSocket> {
                ProviderFilterChain providerFilterChain = new ProviderFilterChain();
                providerFilterChain.doFilter(rpcRequest, rpcResponse);
                doService(rpcRequest, rpcResponse);
+           }catch(RequestRejectException e){
+               //日志记录一下
+               log.info("请求拒绝，拒绝原因：{}",e.getMessage());
+               //要不是没有安全请求通过，要不就是被限流，后面就可以不用处理，也不用响应什么数据了
+               return ;
            }catch (Exception e){
                log.info("请求有异常！");
            }

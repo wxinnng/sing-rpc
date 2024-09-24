@@ -6,3 +6,5 @@ rpc:
   version: 2.1
   serviceGroup: beijing
   srsm: true
+  maxRequests: 10
+  timeInterval: 1000

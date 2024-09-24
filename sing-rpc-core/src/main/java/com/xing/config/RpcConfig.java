@@ -5,6 +5,7 @@ import com.xing.fault.retry.RetryStrategy;
 import com.xing.fault.retry.RetryStrategyKeys;
 import com.xing.fault.tolerant.TolerantStrategyKeys;
 import com.xing.loadbalancer.LoadBalancerKeys;
+import com.xing.ratelimiting.RateLimitingKeys;
 import com.xing.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -75,4 +76,16 @@ public class RpcConfig {
      * 是否需要可视化
      */
     private Boolean srsm = false;
+    /**
+     * 限流策略
+     */
+    private String limiterKey = RateLimitingKeys.TYPE;
+    /**
+     * 最大请求数
+     */
+    private Integer maxRequests = RateLimitingKeys.MAX_REQUEST;
+    /**
+     * 时间间隔
+     */
+    private Long timeInterval = RateLimitingKeys.TIME_INTERVAL;
 }

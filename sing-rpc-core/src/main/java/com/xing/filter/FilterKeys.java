@@ -7,4 +7,5 @@ public interface FilterKeys {
     Integer DEFAULT_CONSUMER_FILTER_ORDER = 10;
     Integer DEFAULT_PROVIDER_FILTER_ORDER = 10;
     Integer DEFAULT_MINOR_FILTER_ORDER = 100;
+    Integer PRIMARY_FILTER_ORDER = 0;
 }
