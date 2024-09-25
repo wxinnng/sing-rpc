@@ -11,13 +11,13 @@
 * **服务可视化**：基于 `Ts + Vue3`编写的前端页面，后端基于`sing-rpc + vert.x Http + Vert.x部署静态页面` ，一键启动服务可视化功能。
 * **可扩展**:使用工厂模式 + 单例模式简化创建和获取序列化器对象的操作。并通过扫描资源路径 + 反射自实现了 `SPI `机制，用户可通过配置的方式，指定单独的序列化器、注册中心、容错机制、过滤器等。
 * **易操作**:封装了服务提供者和消费者启动类；并开发了基于注解驱动的 Spring Boot Starter，一个注解就能快速注册 Bean 为服务、以及注入服务调用代理对象,同时实现XML和Properties两种配置方式。
-* **安全:**基于过滤器链实现请求的校验，`token`信息由注册中心发放，避免非法请求绕过注册中心，去请求服务。
+* **安全:**基于过滤器链实现请求的校验，`token`信息由注册中心发放，避免非法请求绕过注册中心，去请求服务；使用滑动窗口、token令牌桶等方法实现请求的全局限流。
 * **分区:** 对同一服务进行分区、分版本，支持更加细颗粒度的请求。
 
 
 ### 2.版本迭代：
 
-当前最新版本：**2.0.0**
+当前最新版本：**2.1.0**
 
 | 版本  |                           更新内容                           |
 | :---: | :----------------------------------------------------------: |
@@ -33,12 +33,13 @@
 | 1.3.5 |                基于`Caffeine`重构本地注册中心                |
 | 1.4.0 | 过滤器链再次重构：分开不同端的过滤器链，使用迭代器执行过滤器链;增加前置和后置处理方法 |
 | 2.0.0 | 基于`sing-rpc`本身完成服务可视化的功能，支持服务信息、策略等页面，可视化1.0完成 |
+| 2.1.0 |       基于滑动窗口、token令牌桶实现对请求的限流操作。        |
 
 ## 二、系统设计
 
 ### 1.整体流程
 
-![image](https://github.com/user-attachments/assets/add119b5-d9f6-44ca-aca3-9d7fc2c1d53b)
+<img src="https://github.com/user-attachments/assets/add119b5-d9f6-44ca-aca3-9d7fc2c1d53b" alt="image" style="zoom: 50%;" />
 
 ### 2.详细设计
 
@@ -130,11 +131,11 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 * `Filter`
 
-![image](https://github.com/user-attachments/assets/f91b3650-f360-4907-b251-4aecbcf9b81d)
+<img src="https://github.com/user-attachments/assets/f91b3650-f360-4907-b251-4aecbcf9b81d" alt="image" style="zoom:50%;" />
 
 * 过滤器链
 
-![image](https://github.com/user-attachments/assets/81572e52-2af1-4124-92f1-5cd340597b6c)
+<img src="https://github.com/user-attachments/assets/81572e52-2af1-4124-92f1-5cd340597b6c" alt="image" style="zoom:50%;" />
 
 **基于过滤器链实现的功能**
 
@@ -142,13 +143,13 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 ​	请求安全校验就是基于过滤器，流程如图：
 
-![image](https://github.com/user-attachments/assets/7305a674-fb05-41c5-9f2a-7f54622d61fd)
+<img src="https://github.com/user-attachments/assets/7305a674-fb05-41c5-9f2a-7f54622d61fd" alt="image" style="zoom:50%;" />
 
 
 
 #### 服务的分区与版本？
 
-![image](https://github.com/user-attachments/assets/798e347f-d7bc-44dc-97e9-7c139a87a82e)
+<img src="https://github.com/user-attachments/assets/798e347f-d7bc-44dc-97e9-7c139a87a82e" alt="image" style="zoom: 50%;" />
 
 #### **`SRSM(sing-rpc service management)`服务怎么做的？**
 
@@ -156,7 +157,7 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 ​	`srsm`也是采取的三层架构，即：控制层、服务层和数据层，数据层并不是持久化的，而是采用的缓存实现，所以的服务Bean，都是采用**工厂 + 单例**来实现，并且是**懒加载**，保证了Bean的可重用性。
 
-![image](https://github.com/user-attachments/assets/bd23b6ad-b708-4d3a-b975-03c50de47cc2)
+<img src="https://github.com/user-attachments/assets/bd23b6ad-b708-4d3a-b975-03c50de47cc2" alt="image" style="zoom: 50%;" />
 
 **前端技术**
 
@@ -164,20 +165,41 @@ public void doFilter(RpcRequest rpcRequest, RpcResponse rpcResponse){
 
 [wxinnng/srsm: sing-rpc的服务可视化前端项目 -- 基于 Ts + Vue3 (github.com)](https://github.com/wxinnng/srsm)
 
+#### 限流是怎么做的？
+
+​	限流是通过`provider`端的过滤器，而起作用的。
+
+<img src="https://github.com/user-attachments/assets/73a815af-7a6f-40db-a44a-729d3bb65030" alt="image" style="zoom: 50%;" />
+
+**滑动窗口限流**
+
+队列采用的是`ArrayDeque`
+
+<img src="https://github.com/user-attachments/assets/0b23bab0-956f-4e41-b387-c5db830fa497" alt="image" style="zoom:50%;" />
+
+**token令牌桶限流**
+
+<img src="https://github.com/user-attachments/assets/7b56e3c0-abec-40a1-ad48-9dd29e9c7609" alt="image" style="zoom: 50%;" />
+
+
+
 ## 三、技术介绍
 
 ### 1. 技术选型
 
 #### 1.1自定义协议：
 
-| 技术名称    | 简介                                                         | 官网链接                                                     |
-| ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `Etcd`      | `Etcd` 是一个高可用、强一致性的键值存储系统，常用于分布式系统中的配置管理、服务发现和分布式锁。 | [https://etcd.io/](https://etcd.io/)                         |
-| `Vert.x`    | `Vert.x` 是一个用于构建响应式应用程序的工具包，基于事件驱动和非阻塞I/O模型，适用于构建高性能的分布式系统。 | [https://vertx.io/](https://vertx.io/)                       |
-| `Hutool`    | `Hutool` 是一个Java工具包，旨在简化Java开发过程中的常用操作，提供了丰富的工具类和方法，涵盖了字符串处理、日期处理、加密解密等多个方面。 | [https://hutool.cn/](https://hutool.cn/)                     |
-| `Zookeeper` | `Zookeeper` 是一个分布式的、开源的协调服务，用于分布式应用程序，提供配置维护、命名服务、分布式同步等功能。 | [https://zookeeper.apache.org/](https://zookeeper.apache.org/) |
-| `Redis`     | `Redis` 是一个开源的内存数据结构存储系统，可以用作数据库、缓存和消息中间件，支持多种数据结构如字符串、哈希、列表、集合等。 | [https://redis.io/](https://redis.io/)                       |
-| `Logback`   | `Logback` 是一个Java日志框架，是`Log4j`项目的后继者，提供了更高的性能和更多的功能，如自动重载配置、过滤器、异步日志记录等。 | [https://logback.qos.ch/](https://logback.qos.ch/)           |
+| 技术名称       | 简介                                                         | 官网链接                                                     |
+| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `Etcd`         | `Etcd` 是一个高可用、强一致性的键值存储系统，常用于分布式系统中的配置管理、服务发现和分布式锁。 | [https://etcd.io/](https://etcd.io/)                         |
+| `Vert.x`       | `Vert.x` 是一个用于构建响应式应用程序的工具包，基于事件驱动和非阻塞I/O模型，适用于构建高性能的分布式系统。 | [https://vertx.io/](https://vertx.io/)                       |
+| `Hutool`       | `Hutool` 是一个Java工具包，旨在简化Java开发过程中的常用操作，提供了丰富的工具类和方法，涵盖了字符串处理、日期处理、加密解密等多个方面。 | [https://hutool.cn/](https://hutool.cn/)                     |
+| `Zookeeper`    | `Zookeeper` 是一个分布式的、开源的协调服务，用于分布式应用程序，提供配置维护、命名服务、分布式同步等功能。 | [https://zookeeper.apache.org/](https://zookeeper.apache.org/) |
+| `Redis`        | `Redis` 是一个开源的内存数据结构存储系统，可以用作数据库、缓存和消息中间件，支持多种数据结构如字符串、哈希、列表、集合等。 | [https://redis.io/](https://redis.io/)                       |
+| `Logback`      | `Logback` 是一个Java日志框架，是`Log4j`项目的后继者，提供了更高的性能和更多的功能，如自动重载配置、过滤器、异步日志记录等。 | [https://logback.qos.ch/](https://logback.qos.ch/)           |
+| `Caffeine`     | Caffeine 是一个高性能的 Java 缓存库，设计用于提供接近最佳的缓存性能。它借鉴了 Guava 缓存的优点，并在此基础上进行了优化和扩展，提供了更丰富的功能和更高的性能。 | https://github.com/ben-manes/caffeine                        |
+| `Vue3`         | Vue 3 是 Vue.js 的最新主要版本，带来了许多新特性和改进，旨在提高性能、可维护性和开发体验。 | https://v3.vuejs.org/                                        |
+| `Element Plus` | Element Plus 是一个基于 Vue 3 的桌面端组件库，提供了丰富的 UI 组件，帮助开发者快速构建美观且功能强大的 Web 应用程序。 | https://element-plus.org/                                    |
 
 ​	本项目的自定义协议，参考了`Dubbo`的设计方案。
 
@@ -386,4 +408,5 @@ public static void main(String[] args) {
     - [x] 服务端：请求到达服务器、业务代码执行前。
     - [x] 先前都是在代理对象中执行，如果不通过注册中心，直接访问服务端，会绕过所有的过滤器。
   - [x] 1.1.7版本中，重构了过滤器链，使用责任链模式。
-- [ ] 容错机制单一，Fail-back，Fail-over等机制都没有实现，更复杂的还有：限流、熔断、超时控制等等
+- [x] 容错机制单一，Fail-back，Fail-over等机制都没有实现，更复杂的还有：限流、熔断、超时控制等等
+  - [x] 2.1.0版本中，实现了全局请求限流。
