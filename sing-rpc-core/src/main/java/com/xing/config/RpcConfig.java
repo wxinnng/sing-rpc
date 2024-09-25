@@ -79,13 +79,17 @@ public class RpcConfig {
     /**
      * 限流策略
      */
-    private String limiterKey = RateLimitingKeys.TYPE;
+    private String limiterKey = RateLimitingKeys.DEFAULT;
     /**
      * 最大请求数
      */
     private Integer maxRequests = RateLimitingKeys.MAX_REQUEST;
     /**
-     * 时间间隔
+     * 时间间隔(ms)
      */
     private Long timeInterval = RateLimitingKeys.TIME_INTERVAL;
+    /**
+     * token限流中，最大的令牌数目
+     */
+    private Integer maxTokens = RateLimitingKeys.MAX_TOKENS;
 }

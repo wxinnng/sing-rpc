@@ -6,5 +6,6 @@ rpc:
   version: 2.1
   serviceGroup: beijing
   srsm: true
-  maxRequests: 10
+  limiterKey: tokenBucketRateLimiter
   timeInterval: 1000
+  maxTokens: 100

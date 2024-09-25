@@ -19,7 +19,6 @@ public class RateLimitingFilter implements ProviderFilter{
         Limiter limiter = LimiterFactory.getInstance(limiterKey);
         boolean tryResult = limiter.tryAcquire();
         if(!tryResult){
-            log.info("请求被限流");
             System.err.println("===========================被限流=================================");
             throw new RequestRejectException(RpcConstant.REQUEST_LIMIT);
         }

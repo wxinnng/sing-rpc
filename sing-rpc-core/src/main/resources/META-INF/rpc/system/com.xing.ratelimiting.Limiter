@@ -1,1 +1,2 @@
 slidingWindowRateLimiter=com.xing.ratelimiting.SlidingWindowRateLimiter
+tokenBucketRateLimiter=com.xing.ratelimiting.TokenBucketRateLimiter

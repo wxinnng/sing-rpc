@@ -13,5 +13,9 @@ public interface RateLimitingKeys {
     /**
      * 默认限流器类型，滑动窗口
      */
-    String TYPE = "slidingWindowRateLimiter";
+    String DEFAULT = "slidingWindowRateLimiter";
+    /**
+     * 最大的token令牌数
+     */
+    Integer MAX_TOKENS = 100;
 }
