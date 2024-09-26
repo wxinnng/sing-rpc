@@ -1,8 +1,8 @@
 
-import com.xing.config.RegistryConfig;
-import com.xing.model.ServiceMetaInfo;
-import com.xing.registry.EtcdRegistry;
-import com.xing.registry.Registry;
+import io.github.wxinnng.config.RegistryConfig;
+import io.github.wxinnng.model.ServiceMetaInfo;
+import io.github.wxinnng.registry.EtcdRegistry;
+import io.github.wxinnng.registry.Registry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

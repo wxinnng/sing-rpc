@@ -1,4 +1,0 @@
-failBack=com.xing.fault.tolerant.FailBackTolerantStrategy
-failFast=com.xing.fault.tolerant.FailFastTolerantStrategy
-failOver=com.xing.fault.tolerant.FailOverTolerantStrategy
-failSafe=com.xing.fault.tolerant.FailSafeTolerantStrategy

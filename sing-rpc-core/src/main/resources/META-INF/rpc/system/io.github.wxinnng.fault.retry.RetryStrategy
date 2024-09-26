@@ -1,0 +1,2 @@
+no=io.github.wxinnng.fault.retry.NoRetryStrategy
+fixedInterval=io.github.wxinnng.fault.retry.FixedIntervalRetryStrategy

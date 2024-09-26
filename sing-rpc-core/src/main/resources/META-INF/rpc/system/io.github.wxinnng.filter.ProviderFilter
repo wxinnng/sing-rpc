@@ -1,0 +1,3 @@
+providerContext=io.github.wxinnng.filter.ProviderContextFilter
+identityVerification=io.github.wxinnng.filter.IdentityVerificationFilter
+rateLimiting=io.github.wxinnng.filter.RateLimitingFilter

@@ -1,3 +1,0 @@
-consumerContext=com.xing.filter.ConsumerContextFilter
-providerContext=com.xing.filter.ProviderContextFilter
-identityVerification=com.xing.filter.IdentityVerificationFilter

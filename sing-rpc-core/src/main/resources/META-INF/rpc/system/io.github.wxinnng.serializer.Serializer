@@ -1,0 +1,4 @@
+jdk=io.github.wxinnng.serializer.JDKSerializer
+hessian=io.github.wxinnng.serializer.HessianSerializer
+json=io.github.wxinnng.serializer.JSONSerializer
+kryo=io.github.wxinnng.serializer.KryoSerializer

@@ -1,4 +1,4 @@
-jdk=com.xing.serializer.JDKSerializer
-hessian=com.xing.serializer.HessianSerializer
-json=com.xing.serializer.JSONSerializer
-kryo=com.xing.serializer.KryoSerializer
+jdk=serializer.io.github.wxinnng.JDKSerializer
+hessian=serializer.io.github.wxinnng.HessianSerializer
+json=serializer.io.github.wxinnng.JSONSerializer
+kryo=serializer.io.github.wxinnng.KryoSerializer

@@ -1,7 +1,7 @@
 
-import com.xing.loadbalancer.ConsistentHashLoadBalancer;
-import com.xing.loadbalancer.LoadBalancer;
-import com.xing.model.ServiceMetaInfo;
+import io.github.wxinnng.loadbalancer.ConsistentHashLoadBalancer;
+import io.github.wxinnng.loadbalancer.LoadBalancer;
+import io.github.wxinnng.model.ServiceMetaInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * 负载均衡器测试

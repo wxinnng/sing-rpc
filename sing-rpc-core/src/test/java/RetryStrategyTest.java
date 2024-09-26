@@ -1,7 +1,6 @@
-import com.xing.fault.retry.FixedIntervalRetryStrategy;
-import com.xing.fault.retry.NoRetryStrategy;
-import com.xing.fault.retry.RetryStrategy;
-import com.xing.model.RpcResponse;
+import io.github.wxinnng.fault.retry.FixedIntervalRetryStrategy;
+import io.github.wxinnng.fault.retry.RetryStrategy;
+import io.github.wxinnng.model.RpcResponse;
 import org.junit.Test;
 
 public class RetryStrategyTest {

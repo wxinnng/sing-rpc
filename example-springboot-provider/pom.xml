@@ -67,7 +67,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.xing.examplespringbootprovider.ExampleSpringbootProviderApplication</mainClass>
+                    <mainClass>io.github.wxinnng.examplespringbootprovider.ExampleSpringbootProviderApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>

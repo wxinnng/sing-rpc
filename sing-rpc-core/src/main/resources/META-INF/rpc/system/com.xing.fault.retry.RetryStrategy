@@ -1,2 +1,0 @@
-no=com.xing.fault.retry.NoRetryStrategy
-fixedInterval=com.xing.fault.retry.FixedIntervalRetryStrategy

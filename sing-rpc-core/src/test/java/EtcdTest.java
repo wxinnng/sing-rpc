@@ -1,8 +1,6 @@
 import cn.hutool.json.JSONUtil;
-import com.xing.constant.RpcConstant;
-import com.xing.model.RemoteServiceInfo;
-import com.xing.model.ServiceStrategyInfo;
-import com.xing.registry.RegistryKeys;
+import io.github.wxinnng.model.ServiceStrategyInfo;
+import io.github.wxinnng.registry.RegistryKeys;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KV;

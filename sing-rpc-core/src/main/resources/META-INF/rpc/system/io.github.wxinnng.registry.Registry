@@ -1,0 +1,2 @@
+etcd=io.github.wxinnng.registry.EtcdRegistry
+zookeeper=io.github.wxinnng.registry.ZooKeeperRegistry

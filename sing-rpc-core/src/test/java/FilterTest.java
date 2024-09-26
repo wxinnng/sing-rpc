@@ -1,5 +1,3 @@
-import com.xing.filter.Filter;
-import com.xing.filter.FilterChain;
 import org.junit.Test;
 
 import java.util.PriorityQueue;

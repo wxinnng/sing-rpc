@@ -1,3 +1,0 @@
-providerContext=com.xing.filter.ProviderContextFilter
-identityVerification=com.xing.filter.IdentityVerificationFilter
-rateLimiting=com.xing.filter.RateLimitingFilter

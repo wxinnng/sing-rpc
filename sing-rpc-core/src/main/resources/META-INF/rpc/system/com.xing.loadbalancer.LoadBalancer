@@ -1,3 +1,0 @@
-roundRobin=com.xing.loadbalancer.RoundRobinLoadBalancer
-random=com.xing.loadbalancer.RandomLoadBalancer
-consistentHash=com.xing.loadbalancer.ConsistentHashLoadBalancer

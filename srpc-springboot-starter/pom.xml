@@ -78,7 +78,7 @@
             <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
             <!--                <version>${spring-boot.version}</version>-->
             <!--                <configuration>-->
-            <!--                    <mainClass>com.xing.singrpcspringbootstarter.SingRpcSpringBootStarterApplication</mainClass>-->
+            <!--                    <mainClass>singrpcspringbootstarter.io.github.wxinnng.SingRpcSpringBootStarterApplication</mainClass>-->
             <!--                    <skip>true</skip>-->
             <!--                </configuration>-->
             <!--                <executions>-->

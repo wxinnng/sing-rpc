@@ -1,0 +1,3 @@
+roundRobin=io.github.wxinnng.loadbalancer.RoundRobinLoadBalancer
+random=io.github.wxinnng.loadbalancer.RandomLoadBalancer
+consistentHash=io.github.wxinnng.loadbalancer.ConsistentHashLoadBalancer

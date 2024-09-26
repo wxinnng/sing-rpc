@@ -1,0 +1,4 @@
+failBack=io.github.wxinnng.fault.tolerant.FailBackTolerantStrategy
+failFast=io.github.wxinnng.fault.tolerant.FailFastTolerantStrategy
+failOver=io.github.wxinnng.fault.tolerant.FailOverTolerantStrategy
+failSafe=io.github.wxinnng.fault.tolerant.FailSafeTolerantStrategy

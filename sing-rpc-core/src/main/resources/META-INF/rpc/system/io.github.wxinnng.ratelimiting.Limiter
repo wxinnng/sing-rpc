@@ -1,0 +1,2 @@
+slidingWindowRateLimiter=io.github.wxinnng.ratelimiting.SlidingWindowRateLimiter
+tokenBucketRateLimiter=io.github.wxinnng.ratelimiting.TokenBucketRateLimiter

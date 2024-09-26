@@ -1,8 +1,8 @@
 
 import cn.hutool.core.util.IdUtil;
-import com.xing.constant.RpcConstant;
-import com.xing.model.RpcRequest;
-import com.xing.protocol.*;
+import io.github.wxinnng.constant.RpcConstant;
+import io.github.wxinnng.model.RpcRequest;
+import io.github.wxinnng.protocol.*;
 import io.vertx.core.buffer.Buffer;
 import org.junit.Assert;
 import org.junit.Test;
